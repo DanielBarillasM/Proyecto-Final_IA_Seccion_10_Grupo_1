@@ -173,8 +173,8 @@ La parte de generación de horarios utiliza una instancia estructurada del probl
 Proyecto-Final_IA/
 │
 ├── README.md
-├── proyecto_final_ia_hibrido_corregido.ipynb
-├── proyecto_final_ia_hibrido.ipynb
+├── proyecto_archivos/
+│   └── proyecto_final_ia_hibrido.ipynb
 │
 ├── informe/
 │   ├── main.tex
@@ -198,10 +198,6 @@ Proyecto-Final_IA/
 │   ├── arquitectura.png
 │   └── horario_mockup.png
 │
-├── outputs/
-│   ├── graficas/
-│   ├── tablas/
-│   └── modelos/
 │
 └── docs/
     └── presentacion.pdf

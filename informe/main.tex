@@ -1,0 +1,1281 @@
+\documentclass[12pt,twoside]{report}
+
+%% PREAMBULO
+\usepackage[style=apa, backend=biber, sorting=nyt]{biblatex}
+\DeclareLanguageMapping{spanish}{spanish-apa}
+\addbibresource{referencias.bib}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage[dvipsnames,svgnames,table]{xcolor}
+\usepackage[top=2.5cm,bottom=2.5cm,left=3cm,right=2.5cm]{geometry}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{shapes.geometric,arrows.meta,positioning,fit,calc,
+  decorations.pathreplacing,backgrounds,shadows,matrix,chains}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable,skins,theorems}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{enumitem}
+\usepackage{csquotes}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[colorlinks=true,linkcolor=NavyBlue,
+            citecolor=ForestGreen,urlcolor=RoyalBlue]{hyperref}
+
+%% COLORES
+\definecolor{PrimaryBlue}{RGB}{13,71,161}
+\definecolor{AccentBlue}{RGB}{30,136,229}
+\definecolor{LightBlue}{RGB}{227,242,253}
+\definecolor{DarkGray}{RGB}{40,40,40}
+\definecolor{MedGray}{RGB}{100,100,100}
+\definecolor{SuccessGreen}{RGB}{46,125,50}
+\definecolor{WarnOrange}{RGB}{230,81,0}
+\definecolor{PurpleDeep}{RGB}{74,20,140}
+\definecolor{TealDark}{RGB}{0,96,100}
+\definecolor{BoxBg}{RGB}{245,248,255}
+
+%% SECCIONES
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{PrimaryBlue}}
+  {\chaptertitlename~\thechapter}{10pt}{\Huge}
+\titlespacing*{\chapter}{0pt}{-10pt}{20pt}
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{PrimaryBlue}}{\thesection}{1em}{}[\titlerule]
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{AccentBlue}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries\color{DarkGray}}{\thesubsubsection}{1em}{}
+
+%% ENCABEZADOS
+\pagestyle{fancy}\fancyhf{}
+\fancyhead[LE,RO]{\small\color{MedGray}\nouppercase{\leftmark}}
+\fancyhead[RE,LO]{\small\color{MedGray}CC3045 -- Inteligencia Artificial}
+\fancyfoot[C]{\small\color{MedGray}\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+%% CAJAS
+\newtcolorbox{definicion}[1][]{enhanced,breakable,
+  colback=LightBlue,colframe=PrimaryBlue,
+  fonttitle=\bfseries\color{white},title=Definici\'on,
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=PrimaryBlue,rounded corners},#1}
+\newtcolorbox{importante}[1][]{enhanced,breakable,
+  colback=BoxBg,colframe=AccentBlue,left=6pt,right=6pt,
+  borderline west={3pt}{0pt}{AccentBlue},#1}
+\newtcolorbox{modulo}[2][]{enhanced,breakable,
+  colback=white,colframe=#1,
+  fonttitle=\bfseries,title=#2,
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=#1,rounded corners}}
+
+%% TEOREMAS
+\theoremstyle{definition}
+\newtheorem{definition}{Definici\'on}[chapter]
+\newtheorem{proposition}{Proposici\'on}[chapter]
+
+%% ALGORITMOS
+\renewcommand{\algorithmicrequire}{\textbf{Entrada:}}
+\renewcommand{\algorithmicensure}{\textbf{Salida:}}
+\algnewcommand\algorithmicforeach{\textbf{para cada}}
+\algdef{S}[FOR]{ForEach}[1]{\algorithmicforeach\ #1\ \textbf{hacer}}
+
+\hypersetup{
+  pdftitle={Sistema Inteligente H\'ibrido para Planificaci\'on Acad\'emica},
+  pdfauthor={Estudiantes UVG},
+  pdfsubject={Inteligencia Artificial -- Proyecto Final CC3045}}
+
+%% ============================================================================
+\begin{document}
+
+%% PORTADA
+\begin{titlepage}
+\pagecolor{PrimaryBlue}\color{white}
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[AccentBlue,opacity=0.4]
+    (current page.south west) rectangle
+    ([yshift=4cm]current page.south east);
+  \fill[AccentBlue,opacity=0.2]
+    ([xshift=-2cm,yshift=-2cm]current page.north east) circle(5.5cm);
+  \fill[PurpleDeep,opacity=0.15]
+    ([xshift=2cm,yshift=-6cm]current page.north east) circle(3.5cm);
+  \fill[white,opacity=0.06]
+    ([xshift=-4cm,yshift=-4cm]current page.north east) circle(3cm);
+\end{tikzpicture}
+\vspace*{1.2cm}
+\begin{center}
+{\fontsize{11}{13}\selectfont\color{white!80}
+  UNIVERSIDAD DEL VALLE DE GUATEMALA}\\[0.2cm]
+{\fontsize{10}{12}\selectfont\color{white!70}
+  Facultad de Ingenier\'ia~--- Ciencias de la Computaci\'on}
+\vspace{0.5cm}
+\noindent\rule{\linewidth}{0.5pt}
+\vspace{0.4cm}
+
+{\fontsize{9}{11}\selectfont\color{white!70}\textsc{Proyecto Final}}\\[0.15cm]
+{\fontsize{13}{15}\selectfont\bfseries CC3045~--- Inteligencia Artificial}
+
+\vspace{1.1cm}
+{\fontsize{20}{24}\selectfont\bfseries
+  Dise\~no de un Sistema Inteligente H\'ibrido\\[0.35cm]
+  para la Planificaci\'on Acad\'emica\\[0.35cm]
+  Universitaria bajo Restricciones\\[0.35cm]
+  e Incertidumbre}
+
+\vspace{0.6cm}
+{\fontsize{11}{13}\selectfont\color{white!75}\itshape
+  Integraci\'on de aprendizaje supervisado, CSP,\\
+  redes bayesianas y MDP para apoyo a la toma\\
+  de decisiones acad\'emicas}
+
+\vspace{1.1cm}
+\noindent\rule{0.6\linewidth}{0.5pt}
+\vspace{0.7cm}
+
+{\fontsize{10}{13}\selectfont
+\begin{tabular}{rl}
+\textbf{Autores:}  & [Pablo Daniel Barillas Moreno, Hugo Daniel Barillas Ajín y Roberto Nájera]\\[4pt]
+\textbf{Carn\'e(s):} & [22193, 23556 y 23781]\\[4pt]
+\textbf{Docente:}  & [Ing. Suriano]\\[4pt]
+\textbf{Fecha:}    & \today\\[4pt]
+\textbf{Semestre:} & I~--- 2026\\
+\end{tabular}}
+\vspace{1.1cm}
+
+{\fontsize{9}{11}\selectfont\color{white!70}Proyecto Final~}
+\end{center}
+\end{titlepage}
+\nopagecolor
+
+\tableofcontents\clearpage
+
+%% ============================================================================
+\chapter*{Resumen}\addcontentsline{toc}{chapter}{Resumen}
+
+\begin{importante}
+Este documento presenta el dise\~no, la arquitectura y la metodolog\'ia de
+implementaci\'on de un \textbf{sistema inteligente h\'ibrido} para la
+planificaci\'on acad\'emica universitaria.  El sistema integra cuatro m\'odulos
+de Inteligencia Artificial: (1)~aprendizaje supervisado para la \emph{predicci\'on
+de demanda} de cursos; (2)~Problemas de Satisfacci\'on de Restricciones (CSP) con
+heur\'isticas para la \emph{generaci\'on de horarios v\'alidos}; (3)~redes
+bayesianas para el \emph{razonamiento probabil\'istico} y la estimaci\'on de riesgo;
+y (4)~Procesos de Decisi\'on de Markov (MDP) para la \emph{replanificaci\'on
+adaptativa} ante contingencias.
+\end{importante}
+
+La planificaci\'on acad\'emica en instituciones universitarias es un problema
+combinatorio NP-dif\'icil que involucra m\'ultiples capas de decisi\'on, incertidumbre
+operativa y restricciones de diversa naturaleza.  Los enfoques tradicionales tratan
+estos problemas de manera aislada; este proyecto propone una arquitectura cohesiva
+donde la salida de cada m\'odulo alimenta al siguiente, logrando un sistema de
+decisi\'on integral.
+
+\textbf{Palabras clave:} CSP, scheduling acad\'emico, redes bayesianas, MDP,
+aprendizaje supervisado, heur\'isticas de b\'usqueda, sistema h\'ibrido.
+
+%% ============================================================================
+\chapter{Introducci\'on}
+
+\section{Motivaci\'on y contexto}
+
+La planificaci\'on acad\'emica semestral es una de las tareas m\'as cr\'iticas y
+complejas en la administraci\'on universitaria.  En una instituci\'on de mediano
+tama\~no, el proceso involucra coordinar cientos de cursos, decenas de docentes
+con disponibilidades heterog\'eneas, aulas con capacidades y equipamiento diverso,
+y restricciones curriculares que deben respetarse para garantizar la progresi\'on
+acad\'emica de miles de estudiantes.  Realizarlo manualmente es costoso en tiempo,
+propenso a errores y casi siempre suboptimo.
+
+Desde la perspectiva de la Inteligencia Artificial, este problema trasciende la
+simple generaci\'on de horarios.  En realidad se trata de un \textbf{problema de
+decisi\'on multicapa}: es necesario \emph{predecir} cu\'antas secciones abrir,
+\emph{asignar} recursos bajo restricciones, \emph{estimar} el riesgo de conflictos
+futuros y \emph{reaccionar} de forma inteligente cuando los planes originales deben
+modificarse.
+
+\begin{importante}
+Este proyecto demuestra que las t\'ecnicas de IA vistas en el curso~---~agentes
+inteligentes, b\'usqueda heur\'istica, CSP, razonamiento probabil\'istico, aprendizaje
+supervisado y MDP~---~no son herramientas aisladas sino componentes complementarios
+de un sistema de decisi\'on real e integrado.
+\end{importante}
+
+\section{Objetivos}
+
+\subsection*{Objetivo general}
+Dise\~nar e implementar un sistema inteligente h\'ibrido para la planificaci\'on
+acad\'emica universitaria que integre predicci\'on de demanda, generaci\'on de
+horarios bajo restricciones, razonamiento probabil\'istico y replanificaci\'on
+adaptativa.
+
+\subsection*{Objetivos espec\'ificos}
+\begin{enumerate}[leftmargin=2em,itemsep=4pt]
+  \item Construir un m\'odulo de predicci\'on de demanda usando aprendizaje supervisado
+    y comparar al menos tres algoritmos.
+  \item Modelar la generaci\'on de horarios como CSP e implementar backtracking con
+    forward checking, MRV y LCV.
+  \item Dise\~nar una red bayesiana para estimar la probabilidad de conflictos
+    acad\'emicos bajo incertidumbre.
+  \item Formalizar un MDP simplificado para la replanificaci\'on adaptativa y
+    derivar una pol\'itica de acci\'on.
+  \item Integrar los cuatro m\'odulos en un pipeline unificado y evaluarlo sobre
+    instancias sint\'eticas.
+\end{enumerate}
+
+\section{Estructura del documento}
+
+El cap\'itulo~\ref{ch:problema} describe el problema y sus complejidades.
+El cap\'itulo~\ref{ch:analisis} lo analiza desde m\'ultiples perspectivas de IA.
+El cap\'itulo~\ref{ch:propuesta} presenta la propuesta global.
+El cap\'itulo~\ref{ch:solucion} detalla cada m\'odulo.
+El cap\'itulo~\ref{ch:herramientas} documenta las herramientas.
+El cap\'itulo~\ref{ch:resultados} presenta metodolog\'ia experimental.
+El cap\'itulo~\ref{ch:conclusiones} cierra con conclusiones y trabajo futuro.
+
+%% ============================================================================
+\chapter{Descripci\'on del Problema}
+\label{ch:problema}
+
+\section{El proceso real de planificaci\'on acad\'emica}
+
+La planificaci\'on acad\'emica semestral en una universidad comprende las siguientes
+actividades interrelacionadas:
+
+\begin{enumerate}[leftmargin=2em,itemsep=4pt]
+  \item \textbf{Estimaci\'on de demanda}: decidir cu\'antas secciones de cada curso
+    deben abrirse, basado en proyecciones de inscripci\'on y capacidad docente.
+  \item \textbf{Asignaci\'on de recursos}: asignar a cada secci\'on una franja
+    horaria, un aula y un docente, respetando todas las restricciones administrativas
+    y acad\'emicas.
+  \item \textbf{Gesti\'on de contingencias}: gestionar cambios de \'ultimo momento
+    (ausencias, sobrecupo, aver\'ias) de forma r\'apida y coherente.
+  \item \textbf{Comunicaci\'on y publicaci\'on}: distribuir el horario final a
+    estudiantes, docentes y administraci\'on.
+\end{enumerate}
+
+\section{Entradas y salidas del sistema}
+
+\begin{table}[H]
+\centering
+\caption{Entradas y salidas del sistema de planificaci\'on acad\'emica.}
+\label{tab:io}
+\begin{tabularx}{\linewidth}{llX}
+\toprule
+\textbf{Tipo} & \textbf{Entidad} & \textbf{Descripci\'on} \\
+\midrule
+Entrada & Cursos          & Nombre, cr\'editos, prerrequisitos, carrera \\
+Entrada & Estudiantes     & N\'umero proyectado, historial de inscripci\'on \\
+Entrada & Docentes        & Disponibilidades, cursos habilitados, carga m\'axima \\
+Entrada & Aulas           & Capacidad, equipamiento, disponibilidad \\
+Entrada & Hist\'orico     & Inscripciones pasadas, tasas de aprobaci\'on, demanda \\
+Entrada & Restricciones   & Reglas duras y blandas administrativas \\
+\midrule
+Salida  & Predicci\'on    & N\'umero esperado de secciones por curso \\
+Salida  & Horario         & Asignaci\'on completa secci\'on$\to$(franja, aula, docente) \\
+Salida  & Evaluaci\'on    & M\'etricas de calidad, riesgo de conflicto estimado \\
+Salida  & Replanificaci\'on & Acciones sugeridas ante contingencias \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\vspace{4cm}
+
+\section{Restricciones del sistema}
+
+\subsection{Restricciones duras}
+\begin{itemize}[leftmargin=2em,itemsep=3pt]
+  \item Un docente no puede impartir dos secciones en la misma franja horaria.
+  \item Un aula no puede albergar dos secciones simult\'aneamente.
+  \item La capacidad del aula debe ser mayor o igual al cupo de la secci\'on.
+  \item Un docente solo puede impartir cursos para los que est\'a habilitado.
+  \item Un docente solo puede asignarse en franjas de su disponibilidad declarada.
+\end{itemize}
+
+\subsection{Restricciones blandas}
+\begin{itemize}[leftmargin=2em,itemsep=3pt]
+  \item Minimizar los intervalos libres en el horario de cada docente.
+  \item Respetar las preferencias de franja horaria de los docentes.
+  \item Distribuir la carga docente equitativamente entre los d\'ias de la semana.
+  \item Concentrar los cursos de un mismo pensum en bloques contiguos.
+  \item Evitar asignar cursos de alta demanda en las primeras o \'ultimas franjas.
+\end{itemize}
+
+\section{Complejidad del problema}
+
+Sea $n$ el n\'umero de secciones, $t$ el n\'umero de franjas, $r$ el n\'umero de
+aulas y $p$ el n\'umero de docentes disponibles.  El espacio de b\'usqueda ingenuo
+tiene cardinalidad:
+
+\begin{equation}
+  |\mathcal{S}| = (t \cdot r \cdot p)^{n}
+  \label{eq:espacio}
+\end{equation}
+
+Para una facultad con $n=80$, $t=25$, $r=15$, $p=20$:
+$|\mathcal{S}| = 7500^{80} \approx 10^{310}$.
+Esto demuestra que la b\'usqueda ingenua es completamente inviable y justifica la
+necesidad de m\'etodos inteligentes.
+
+%% ============================================================================
+\chapter{An\'alisis del Problema}
+\label{ch:analisis}
+
+\section{Descomposici\'on en subproblemas}
+
+El problema global se descompone en cuatro subproblemas con distintas
+caracter\'isticas computacionales:
+
+\begin{table}[H]
+\centering
+\caption{Descomposici\'on del problema y t\'ecnica de IA aplicada.}
+\label{tab:descomp}
+\begin{tabular}{clll}
+\toprule
+\textbf{Capa} & \textbf{Subproblema} & \textbf{T\'ecnica de IA} & \textbf{Paradigma} \\
+\midrule
+1 & Predicci\'on de demanda   & Aprendizaje supervisado & ML \\
+2 & Generaci\'on de horarios  & CSP + heur\'isticas     & B\'usqueda \\
+3 & Estimaci\'on de riesgo    & Redes bayesianas         & Razonamiento probabil. \\
+4 & Replanificaci\'on         & MDP                      & Decisi\'on secuencial \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{El sistema como agente inteligente}
+
+Siguiendo el paradigma de agentes inteligentes de Russell y Norvig~\cite{russell2020},
+el sistema puede modelarse como:
+
+\begin{definicion}
+Un agente de planificaci\'on acad\'emica es una funci\'on
+$f: \mathcal{P}^* \to \mathcal{A}$ que mapea secuencias de percepciones a acciones,
+donde:
+\begin{itemize}
+  \item $\mathcal{P}$ = percepciones: inscripciones hist\'oricas, disponibilidades,
+    contingencias.
+  \item $\mathcal{A}$ = acciones: asignar secci\'on, mover franja, cancelar secci\'on,
+    reasignar docente.
+  \item El objetivo es maximizar la m\'etrica de calidad global:
+    $Q = \eta_H \cdot \eta_S \cdot (1 - P_{\text{riesgo}})$.
+\end{itemize}
+\end{definicion}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  box/.style={rectangle,rounded corners=5pt,draw=PrimaryBlue,thick,
+              fill=LightBlue,text width=3.2cm,align=center,minimum height=1cm},
+  cloud/.style={ellipse,draw=AccentBlue,thick,fill=blue!10,
+                text width=3cm,align=center,minimum height=1.2cm},
+  arr/.style={-Stealth,thick,AccentBlue}
+]
+  \node[cloud] (env) at (0,0) {Entorno\\Acad\'emico};
+  \node[box] (sensors) at (5,1.2) {Sensores\\(datos hist\'oricos,\\contingencias)};
+  \node[box] (agent) at (5,-1.2) {Agente\\Inteligente\\H\'ibrido};
+  \node[box] (actuators) at (10,0) {Actuadores\\(horario,\\replan.)};
+
+  \draw[arr] (env) to[bend left=15] node[above,font=\small]{percepciones} (sensors);
+  \draw[arr] (sensors) -- (agent);
+  \draw[arr] (agent) -- (actuators);
+  \draw[arr] (actuators) to[bend left=15] node[below,font=\small]{acciones} (env);
+  \draw[arr,dashed] (agent) to[bend right=20] node[left,font=\small\itshape]{$f(s)$} (sensors);
+\end{tikzpicture}
+\caption{Modelo del sistema como agente inteligente en su entorno acad\'emico.}
+\label{fig:agente}
+\end{figure}
+
+\section{An\'alisis de cada subproblema}
+
+\subsection{Capa 1: Predicci\'on como problema de aprendizaje}
+
+La predicci\'on de demanda es una tarea de \textbf{regresi\'on o clasificaci\'on}:
+dado un vector de caracter\'isticas hist\'oricas $\mathbf{x}_i$ de un curso,
+predecir la demanda esperada $\hat{y}_i$.  Sea $\mathcal{D} = \{(\mathbf{x}_i, y_i)\}_{i=1}^{N}$
+el conjunto de entrenamiento.  El objetivo es encontrar una funci\'on $h: \mathbb{R}^d \to \mathbb{R}$
+que minimice la funci\'on de p\'erdida:
+
+\begin{equation}
+  h^* = \arg\min_{h \in \mathcal{H}} \frac{1}{N}\sum_{i=1}^{N} \mathcal{L}(h(\mathbf{x}_i), y_i) + \lambda \Omega(h)
+  \label{eq:erm}
+\end{equation}
+
+donde $\mathcal{L}$ es la funci\'on de p\'erdida (MSE para regresi\'on,
+entrop\'ia cruzada para clasificaci\'on) y $\Omega(h)$ es un t\'ermino de
+regularizaci\'on.
+
+\subsection{Capa 2: Asignaci\'on como CSP}
+
+\begin{definition}
+Un CSP se define como $\langle X, D, C \rangle$ donde:
+$X = \{X_1,\ldots,X_n\}$ son las variables (secciones),
+$D = \{D_1,\ldots,D_n\}$ son los dominios,
+y $C$ es el conjunto de restricciones.
+\end{definition}
+
+El espacio de estados tiene cardinalidad dada por la ecuaci\'on~\eqref{eq:espacio}.
+Las heur\'isticas MRV y LCV, junto con forward checking, reducen este espacio
+en varios \'ordenes de magnitud.
+
+\subsection{Capa 3: Incertidumbre como inferencia probabil\'istica}
+
+Los eventos inciertos (ausencia de docente, sobrecupo) se modelan mediante una
+red bayesiana con variables latentes.  El teorema de Bayes:
+
+\begin{equation}
+  P(Q \mid E=e) = \frac{P(E=e \mid Q)\, P(Q)}{P(E=e)}
+  \label{eq:bayes}
+\end{equation}
+
+permite actualizar las probabilidades de riesgo dado nuevo evidencia.
+
+\subsection{Capa 4: Reacci\'on como decisi\'on secuencial (MDP)}
+
+El proceso de replanificaci\'on se modela como un MDP
+$\langle S, A, T, R, \gamma \rangle$ donde los estados representan
+configuraciones del horario y las acciones corresponden a modificaciones
+posibles.  La ecuaci\'on de Bellman:
+
+\begin{equation}
+  V^*(s) = \max_{a \in A} \left[ R(s,a) + \gamma \sum_{s' \in S} T(s,a,s')\, V^*(s') \right]
+  \label{eq:bellman}
+\end{equation}
+
+permite derivar la pol\'itica \'optima $\pi^*(s) = \arg\max_{a} Q^*(s,a)$.
+
+%% ============================================================================
+\chapter{Propuesta de Soluci\'on}
+\label{ch:propuesta}
+
+\section{Arquitectura global del sistema h\'ibrido}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  mod/.style={rectangle,rounded corners=5pt,draw=#1,thick,fill=#1!10,
+              text width=3.4cm,align=center,minimum height=1.3cm,font=\small},
+  arrow/.style={-Stealth,thick,gray!70},
+  label/.style={font=\scriptsize\itshape,text=MedGray}
+]
+  %% Datos
+  \node[mod=TealDark] (data) at (0,0)
+    {\textbf{Datos}\\\footnotesize Hist\'orico, cursos,\\ docentes, aulas};
+
+  %% Modulo 1
+  \node[mod=SuccessGreen] (ml) at (4.5,2)
+    {\textbf{M\'odulo 1}\\Predicci\'on\\ de Demanda\\(ML)};
+
+  %% Modulo 2
+  \node[mod=PrimaryBlue] (csp) at (4.5,0)
+    {\textbf{M\'odulo 2}\\Generaci\'on\\ de Horario\\(CSP)};
+
+  %% Modulo 3
+  \node[mod=PurpleDeep] (bayes) at (4.5,-2)
+    {\textbf{M\'odulo 3}\\Evaluaci\'on\\ de Riesgo\\(Bayes)};
+
+  %% Modulo 4
+  \node[mod=WarnOrange] (mdp) at (9.5,0)
+    {\textbf{M\'odulo 4}\\Replanifi-\\caci\'on\\(MDP)};
+
+  %% Salida
+  \node[mod=TealDark] (out) at (14,0)
+    {\textbf{Salida}\\Horario final\\ + Reporte};
+
+  %% Flechas
+  \draw[arrow] (data) -- (ml);
+  \draw[arrow] (data) -- (csp);
+  \draw[arrow] (data) -- (bayes);
+  \draw[arrow] (ml) -- node[label,above]{secciones} (csp);
+  \draw[arrow] (csp) -- node[label,right]{horario base} (bayes);
+  \draw[arrow] (bayes) -- node[label,above]{riesgo} (mdp);
+  \draw[arrow] (csp) -- node[label,above]{} (mdp);
+  \draw[arrow] (mdp) -- (out);
+  \draw[arrow,dashed] (mdp.north) to[bend left=30]
+    node[label,above]{retroalimentaci\'on} (csp.north);
+\end{tikzpicture}
+\caption{Arquitectura global del sistema inteligente h\'ibrido.}
+\label{fig:arch}
+\end{figure}
+
+\section{Justificaci\'on del enfoque h\'ibrido}
+
+\begin{table}[H]
+\centering
+\caption{Comparaci\'on entre enfoque \'unico y sistema h\'ibrido propuesto.}
+\label{tab:justif}
+\begin{tabularx}{\linewidth}{lXX}
+\toprule
+\textbf{Criterio} & \textbf{Enfoque \'unico (solo CSP)} &
+  \textbf{Sistema h\'ibrido propuesto} \\
+\midrule
+Predicci\'on & No considera demanda futura &
+  ML predice secciones necesarias \\
+Asignaci\'on & Genera horario bajo restricciones &
+  CSP genera horario \'optimo con dominio reducido por ML \\
+Incertidumbre & Supone datos perfectos &
+  Bayes modela eventos inciertos y estima riesgo \\
+Adaptabilidad & Est\'atico ante cambios &
+  MDP decide acci\'on \'optima en contingencias \\
+Cobertura del curso & Una sola t\'ecnica &
+  ML + CSP + Bayes + MDP (4 m\'odulos) \\
+Aplicabilidad real & Limitada & Alta \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Flujo de decisi\'on del sistema}
+
+El sistema opera secuencialmente en cuatro fases:
+
+\begin{enumerate}[leftmargin=2em,itemsep=5pt]
+  \item \textbf{Fase~1 --- Predicci\'on}: el m\'odulo ML analiza el hist\'orico y
+    genera una predicci\'on de demanda por curso, determinando cu\'antas secciones
+    deben abrirse.
+  \item \textbf{Fase~2 --- Generaci\'on}: con las secciones definidas, el m\'odulo CSP
+    construye el horario v\'alido aplicando backtracking con MRV, LCV y forward
+    checking.
+  \item \textbf{Fase~3 --- Evaluaci\'on de riesgo}: la red bayesiana analiza el
+    horario generado y estima la probabilidad de cada tipo de conflicto
+    ($P(\text{conflicto} \mid \text{horario})$).
+  \item \textbf{Fase~4 --- Replanificaci\'on}: si el riesgo supera un umbral
+    $\theta$, o si ocurre una contingencia real, el m\'odulo MDP selecciona la
+    acci\'on \'optima de reajuste.
+\end{enumerate}
+
+%% ============================================================================
+\chapter{Descripci\'on de la Soluci\'on}
+\label{ch:solucion}
+
+\section{M\'odulo 1: Predicci\'on de Demanda (ML)}
+
+\subsection{Formulaci\'on del problema}
+
+La predicci\'on de demanda se formula como un problema de \textbf{regresi\'on} donde
+la variable objetivo es $y_i$ = n\'umero de estudiantes esperados en el curso~$i$
+para el siguiente semestre.  Como problema de clasificaci\'on, puede binarizarse:
+$y_i = 1$ si se proyecta sobrecupo, 0 en caso contrario.
+
+\subsection{Ingenier\'ia de features}
+
+\begin{table}[H]
+\centering
+\caption{Variables (features) para el m\'odulo de predicci\'on.}
+\label{tab:features}
+\begin{tabular}{lll}
+\toprule
+\textbf{Feature} & \textbf{Tipo} & \textbf{Descripci\'on} \\
+\midrule
+$x_1$: demanda\_hist & num\'erica & Inscripciones promedio \'ultimos 3 semestres \\
+$x_2$: tasa\_aprobacion & num\'erica & Fracci\'on de aprobados histt\'oricamente \\
+$x_3$: semestre & categ\'orica & Primer o segundo semestre del a\~no \\
+$x_4$: tiene\_prereq & binaria & Si el curso tiene prerrequisito \\
+$x_5$: capacidad\_prev & num\'erica & Cupo asignado en el semestre anterior \\
+$x_6$: turno & categ\'orica & Ma\~nana / tarde / noche \\
+$x_7$: carrera & categ\'orica & Carrera a la que pertenece el curso \\
+$x_8$: n\_secciones\_prev & num\'erica & N\'umero de secciones abiertas anteriormente \\
+$x_9$: tendencia & num\'erica & Pendiente de la demanda en los \'ultimos 4 semestres \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Modelos comparados}
+
+Se comparan los siguientes modelos de aprendizaje supervisado:
+\begin{itemize}[leftmargin=2em,itemsep=3pt]
+  \item \textbf{Regresi\'on lineal}: $\hat{y} = \mathbf{w}^\top \mathbf{x} + b$
+  \item \textbf{Regresi\'on log\'istica} (versi\'on clasificaci\'on):
+    $P(y=1|\mathbf{x}) = \sigma(\mathbf{w}^\top \mathbf{x} + b)$
+  \item \textbf{\'Arbol de decisi\'on}: particiones recursivas del espacio de features
+  \item \textbf{Naive Bayes}: $\hat{y} = \arg\max_k P(y=k)\prod_j P(x_j|y=k)$
+  \item \textbf{SVM}: $\hat{y} = \text{sign}(\mathbf{w}^\top\phi(\mathbf{x}) + b)$
+\end{itemize}
+
+\subsection{Pseudoc\'odigo del m\'odulo de predicci\'on}
+
+\begin{algorithm}[H]
+\caption{Entrenamiento y evaluaci\'on del m\'odulo de predicci\'on}
+\label{alg:ml}
+\begin{algorithmic}[1]
+\Require Conjunto de datos hist\'orico $\mathcal{D}$, lista de modelos $\mathcal{M}$
+\Ensure Mejor modelo $h^*$ y predicciones $\hat{Y}$
+\State $\mathcal{D}_{\text{train}}, \mathcal{D}_{\text{test}} \leftarrow \text{SplitStratified}(\mathcal{D}, 0.8)$
+\State Preprocesar: imputar, normalizar, codificar categ\'oricas
+\State Seleccionar features con correlaci\'on o importancia > umbral
+\ForEach{$m \in \mathcal{M}$}
+  \State $h_m \leftarrow \text{Entrenar}(m, \mathcal{D}_{\text{train}})$ con validaci\'on cruzada 5-fold
+  \State $\text{score}_m \leftarrow \text{Evaluar}(h_m, \mathcal{D}_{\text{test}})$
+\EndFor
+\State $h^* \leftarrow \arg\max_{m} \text{score}_m$
+\State $\hat{Y} \leftarrow h^*(\mathbf{X}_{\text{nuevo semestre}})$
+\Return $h^*, \hat{Y}$
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{M\'etricas de evaluaci\'on del m\'odulo ML}
+
+Para regresi\'on: MAE $= \frac{1}{N}\sum|y_i - \hat{y}_i|$,
+RMSE $= \sqrt{\frac{1}{N}\sum(y_i-\hat{y}_i)^2}$.
+Para clasificaci\'on: accuracy, precision, recall, F1-score y AUC-ROC.
+El criterio de selecci\'on de modelo es:
+
+\begin{equation}
+  h^* = \arg\min_{m \in \mathcal{M}} \text{RMSE}_{\text{CV}}(m) + \lambda \cdot \text{Complejidad}(m)
+  \label{eq:model_sel}
+\end{equation}
+
+%% ------------- SECCION 2 CSP -------------------------------------------------
+\section{M\'odulo 2: Generaci\'on de Horarios con CSP}
+
+\subsection{Formulaci\'on formal}
+
+\begin{definition}
+El CSP de scheduling acad\'emico es $\langle X, D, C \rangle$ donde:
+\begin{itemize}
+  \item $X_i = (\text{franja}_i, \text{aula}_i, \text{docente}_i)$ para cada secci\'on $i$.
+  \item $D_i = T \times R_i \times P_i$ donde $T$ es el conjunto de franjas,
+    $R_i$ las aulas con capacidad suficiente, y $P_i$ los docentes habilitados.
+  \item $C$ incluye las restricciones de no solapamiento (ecuaciones
+    \ref{eq:rc1}--\ref{eq:rc3}).
+\end{itemize}
+\end{definition}
+
+\begin{equation}
+  \forall i \neq j:\; (\text{doc}_i = \text{doc}_j) \Rightarrow (\text{franja}_i \neq \text{franja}_j)
+  \label{eq:rc1}
+\end{equation}
+\begin{equation}
+  \forall i \neq j:\; (\text{aula}_i = \text{aula}_j) \Rightarrow (\text{franja}_i \neq \text{franja}_j)
+  \label{eq:rc2}
+\end{equation}
+\begin{equation}
+  \forall i:\; \text{cap}(\text{aula}_i) \geq \text{cupo}(i)
+  \label{eq:rc3}
+\end{equation}
+
+\subsection{Factor graph y funci\'on objetivo}
+
+\begin{equation}
+  \text{Weight}(\mathbf{x}) = \prod_{j} f_j(\mathbf{x}_{\text{scope}(j)}), \quad f_j \in [0,1]
+  \label{eq:weight}
+\end{equation}
+
+\begin{equation}
+  \mathbf{x}^* = \arg\max_{\mathbf{x} \in \mathcal{F}} \text{Weight}(\mathbf{x})
+  \label{eq:obj_csp}
+\end{equation}
+
+donde $\mathcal{F}$ es el conjunto de asignaciones que satisfacen todas las restricciones duras.
+
+\subsection{Grafo de restricciones}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  var/.style={circle,draw=PrimaryBlue,thick,fill=LightBlue,
+              minimum size=1cm,font=\small},
+  res/.style={rectangle,draw=WarnOrange,thick,fill=orange!10,
+              rounded corners=3pt,font=\scriptsize,align=center,
+              minimum height=0.7cm,minimum width=1.8cm}
+]
+  \node[var] (s1) at (0,0)  {$X_1$};
+  \node[var] (s2) at (3,0)  {$X_2$};
+  \node[var] (s3) at (6,0)  {$X_3$};
+  \node[var] (s4) at (1.5,-2.5) {$X_4$};
+  \node[var] (s5) at (4.5,-2.5) {$X_5$};
+
+  \draw[thick,AccentBlue] (s1) -- node[res,above,yshift=2pt]{docente} (s2);
+  \draw[thick,AccentBlue] (s2) -- node[res,above,yshift=2pt]{aula}    (s3);
+  \draw[thick,AccentBlue] (s1) -- node[res,left, xshift=-3pt]{pensum} (s4);
+  \draw[thick,AccentBlue] (s3) -- node[res,right,xshift=3pt]{docente} (s5);
+  \draw[thick,AccentBlue] (s4) -- node[res,below,yshift=-2pt]{aula}   (s5);
+  \draw[thick,dashed,MedGray] (s2) -- (s4);
+  \draw[thick,dashed,MedGray] (s2) -- (s5);
+\end{tikzpicture}
+\caption{Grafo de restricciones entre secciones.  Aristas s\'olidas = restricciones activas.}
+\label{fig:grafo}
+\end{figure}
+
+\subsection{Heur\'isticas de b\'usqueda}
+
+\paragraph{MRV (Minimum Remaining Values):}
+\begin{equation}
+  X^* = \arg\min_{X_i \notin \text{asignadas}} |D_i^{\text{actual}}|
+  \label{eq:mrv}
+\end{equation}
+
+\paragraph{LCV (Least Constraining Value):}
+\begin{equation}
+  \text{lcv}(v, X_i) = \sum_{X_j \in N(X_i)} |\{d \in D_j : (v,d)\text{ viola }C\}|
+  \label{eq:lcv}
+\end{equation}
+
+\begin{algorithm}[H]
+\caption{Backtracking con FC, MRV y LCV}
+\label{alg:bt}
+\begin{algorithmic}[1]
+\Require CSP $\langle X,D,C\rangle$
+\Ensure Asignaci\'on completa o FALLO
+\Function{Backtrack}{$A$, $D$}
+  \If{$A$ completa} \Return $A$ \EndIf
+  \State $X_i \leftarrow \text{MRV}(A, D)$
+  \ForEach{$v \in \text{LCV}(X_i, D, A)$}
+    \If{$v$ consistente con $A$}
+      \State $A \leftarrow A \cup \{X_i = v\}$
+      \State $D' \leftarrow \text{ForwardChecking}(X_i, v, D)$
+      \If{$D' \neq$ FALLO}
+        \State resultado $\leftarrow$ \Call{Backtrack}{$A$, $D'$}
+        \If{resultado $\neq$ FALLO} \Return resultado \EndIf
+      \EndIf
+      \State $A \leftarrow A \setminus \{X_i=v\}$; restaurar $D$
+    \EndIf
+  \EndFor
+  \Return FALLO
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]
+\caption{Beam Search para generaci\'on de horarios}
+\label{alg:beam}
+\begin{algorithmic}[1]
+\Require Ancho $k$, CSP, funci\'on de evaluaci\'on $\text{Eval}$
+\Ensure Mejor asignaci\'on encontrada
+\Function{BeamSearch}{$k$, CSP}
+  \State beam $\leftarrow [\{\}]$
+  \While{beam no vac\'io}
+    \State candidatos $\leftarrow []$
+    \ForEach{$A \in$ beam}
+      \State $X_i \leftarrow$ siguiente variable no asignada (MRV)
+      \ForEach{$v \in D_i$}
+        \If{$A \cup \{X_i=v\}$ consistente}
+          candidatos.add$(A \cup \{X_i=v\})$
+        \EndIf
+      \EndFor
+    \EndFor
+    \If{candidatos vac\'io} \Return mejor en beam \EndIf
+    \State beam $\leftarrow$ top-$k$ de candidatos seg\'un Eval
+  \EndWhile
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+%% ------------- SECCION 3 BAYES -----------------------------------------------
+\section{M\'odulo 3: Evaluaci\'on de Riesgo con Redes Bayesianas}
+
+\subsection{Motivaci\'on}
+
+Una vez generado el horario base, existen eventos inciertos que podr\'ian
+invalidarlo: ausencia inesperada de un docente, demanda mayor a la predicha,
+falla de equipo en un aula especializada.  La red bayesiana permite cuantificar
+\emph{a priori} la probabilidad de cada tipo de conflicto.
+
+\subsection{Estructura de la red bayesiana}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  bnode/.style={ellipse,draw=PurpleDeep,thick,fill=purple!10,
+                minimum width=2.4cm,minimum height=0.9cm,
+                align=center,font=\small},
+  barr/.style={-Stealth,thick,PurpleDeep}
+]
+  \node[bnode] (demand) at (0, 3)    {Alta\\demanda};
+  \node[bnode] (tdoc)   at (4, 3)    {Disponib.\\docente};
+  \node[bnode] (taula)  at (8, 3)    {Disponib.\\aula};
+  \node[bnode] (sobre)  at (2, 1.2)  {Riesgo de\\sobrecupo};
+  \node[bnode] (change) at (6, 1.2)  {Riesgo de\\cambio};
+  \node[bnode] (reprog) at (4,-0.4)  {Riesgo de\\replanif.};
+
+  \draw[barr] (demand) -- (sobre);
+  \draw[barr] (demand) -- (change);
+  \draw[barr] (tdoc)   -- (change);
+  \draw[barr] (taula)  -- (change);
+  \draw[barr] (sobre)  -- (reprog);
+  \draw[barr] (change) -- (reprog);
+\end{tikzpicture}
+\caption{Red bayesiana para estimaci\'on de riesgo acad\'emico.}
+\label{fig:bayes}
+\end{figure}
+
+\subsection{Inferencia probabil\'istica}
+
+La probabilidad de que se requiera replanificaci\'on dada la evidencia $E=e$:
+
+\begin{equation}
+  P(\text{Replanif.} = 1 \mid E = e) =
+  \frac{P(E=e \mid \text{Replanif.}=1)\; P(\text{Replanif.}=1)}{P(E=e)}
+  \label{eq:bayes_risk}
+\end{equation}
+
+El algoritmo de inferencia exacta (eliminaci\'on de variables) calcula
+la distribuci\'on marginal de cualquier nodo dado un conjunto de nodos
+observados.
+
+\begin{algorithm}[H]
+\caption{Evaluaci\'on de riesgo probabil\'istico}
+\label{alg:risk}
+\begin{algorithmic}[1]
+\Require Red bayesiana $\mathcal{B}$, horario $H$, umbral $\theta$
+\Ensure Probabilidad de riesgo $p_{\text{risk}}$ y bandera de alerta
+\State Extraer evidencia $e$ del horario $H$: disponibilidades, demanda predicha
+\State $p_{\text{risk}} \leftarrow P(\text{Replanif.}=1 \mid e)$ (inferencia en $\mathcal{B}$)
+\If{$p_{\text{risk}} > \theta$}
+  \Return $p_{\text{risk}}$, ALERTA
+\Else
+  \Return $p_{\text{risk}}$, OK
+\EndIf
+\end{algorithmic}
+\end{algorithm}
+
+%% ------------- SECCION 4 MDP ------------------------------------------------
+\section{M\'odulo 4: Replanificaci\'on con MDP}
+
+\subsection{Formulaci\'on del MDP}
+
+Cuando ocurre una contingencia, el proceso de replanificaci\'on se formaliza
+como un MDP $\langle S, A, T, R, \gamma \rangle$:
+
+\begin{table}[H]
+\centering
+\caption{Componentes del MDP de replanificaci\'on.}
+\label{tab:mdp}
+\begin{tabular}{lp{10cm}}
+\toprule
+\textbf{Componente} & \textbf{Descripci\'on} \\
+\midrule
+$S$ & Configuraciones del horario: (secciones asignadas, conflictos activos,
+  recursos disponibles) \\
+$A$ & Acciones: mover franja, reasignar aula, cambiar docente, abrir nueva
+  secci\'on, mantener plan \\
+$T(s,a,s')$ & Probabilidad de transitar al estado $s'$ al tomar acci\'on $a$
+  en estado $s$ (derivada de la red bayesiana) \\
+$R(s,a)$ & Recompensa: $+10$ si se resuelve el conflicto sin afectar otros
+  cursos; $-5$ si genera nuevos conflictos \\
+$\gamma$ & Factor de descuento $\gamma = 0.9$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Ecuaci\'on de Bellman}
+
+La funci\'on de valor \'optima satisface:
+
+\begin{equation}
+  V^*(s) = \max_{a \in A(s)} \left[ R(s,a) + \gamma \sum_{s' \in S} T(s,a,s')\, V^*(s') \right]
+  \label{eq:bellman2}
+\end{equation}
+
+La pol\'itica \'optima se extrae como:
+
+\begin{equation}
+  \pi^*(s) = \arg\max_{a \in A(s)} \left[ R(s,a) + \gamma \sum_{s'} T(s,a,s')\, V^*(s') \right]
+  \label{eq:policy}
+\end{equation}
+
+\subsection{Diagrama de transici\'on de estados}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  state/.style={circle,draw=WarnOrange,thick,fill=orange!15,
+                minimum size=1.5cm,align=center,font=\small},
+  sarr/.style={-Stealth,thick,WarnOrange},
+  lbl/.style={font=\scriptsize,color=DarkGray}
+]
+  \node[state] (s0) at (0,0) {$s_0$\\Normal};
+  \node[state] (s1) at (4,1.5) {$s_1$\\Conflicto\\ leve};
+  \node[state] (s2) at (4,-1.5) {$s_2$\\Ausencia\\ docente};
+  \node[state] (s3) at (8,0) {$s_3$\\Resuelto};
+  \node[state,draw=SuccessGreen,fill=green!15] (sf) at (12,0)
+    {$s_f$\\Horario\\publicado};
+
+  \draw[sarr] (s0) to[bend left=10]
+    node[lbl,above]{$P(\text{leve})$} (s1);
+  \draw[sarr] (s0) to[bend right=10]
+    node[lbl,below]{$P(\text{ausencia})$} (s2);
+  \draw[sarr] (s1) to[bend left=10]
+    node[lbl,above]{$a$: mover franja} (s3);
+  \draw[sarr] (s2) to[bend right=10]
+    node[lbl,below]{$a$: reasignar doc.} (s3);
+  \draw[sarr] (s3) -- node[lbl,above]{verificar} (sf);
+  \draw[sarr,dashed] (s1) to[bend right=15]
+    node[lbl,right]{$a$: abrir secc.} (s2);
+\end{tikzpicture}
+\caption{Diagrama simplificado de transici\'on de estados en el MDP de replanificaci\'on.}
+\label{fig:mdp}
+\end{figure}
+
+\begin{algorithm}[H]
+\caption{Selecci\'on de acci\'on en el MDP (pol\'itica greedy)}
+\label{alg:mdp}
+\begin{algorithmic}[1]
+\Require Estado actual $s$, funci\'on $Q^*(s,a)$, MDP
+\Ensure Acci\'on \'optima $a^*$
+\State Observar estado del horario: conflictos, recursos, probabilidades de riesgo
+\State Actualizar $s \in S$ con el estado actual observado
+\State $a^* \leftarrow \arg\max_{a \in A(s)} Q^*(s,a)$
+\State Ejecutar $a^*$ sobre el horario
+\State Observar nuevo estado $s'$ y recompensa $r$
+\State Actualizar estimaciones si se usa aprendizaje por refuerzo
+\Return $a^*$, $s'$
+\end{algorithmic}
+\end{algorithm}
+
+%% ------------- SECCION 5 INTEGRACION ----------------------------------------
+\section{Integraci\'on de m\'odulos}
+
+\subsection{Pipeline completo de decisi\'on}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  step/.style={rectangle,rounded corners=4pt,draw=#1,thick,fill=#1!12,
+               text width=3cm,align=center,minimum height=1.1cm,font=\small},
+  arr/.style={-Stealth,thick,gray}
+]
+  \node[step=TealDark] (d) at (0,0) {Datos hist\'oricos\\+ restricciones};
+  \node[step=SuccessGreen] (m1) at (3.5,0) {M\'od. 1\\ML: predicci\'on\\de secciones};
+  \node[step=PrimaryBlue] (m2) at (7,0) {M\'od. 2\\CSP: horario\\base};
+  \node[step=PurpleDeep] (m3) at (10.5,0) {M\'od. 3\\Bayes: riesgo\\$P(\text{conf})$};
+  \node[step=WarnOrange] (m4) at (7,-2.5) {M\'od. 4\\MDP: acci\'on\\de reajuste};
+  \node[step=TealDark] (out) at (3.5,-2.5) {Horario final\\+ reporte};
+
+  \draw[arr] (d)--(m1)--(m2)--(m3);
+  \draw[arr] (m3) -- node[right,font=\scriptsize]{riesgo$>\theta$} (m4);
+  \draw[arr] (m4) -- node[below,font=\scriptsize]{horario corregido} (out);
+  \draw[arr] (m2) to[bend right=20] node[below,font=\scriptsize]{OK} (out);
+  \draw[arr,dashed] (m4.north) to[bend left=40]
+    node[above,font=\scriptsize\itshape]{retroalimentaci\'on} (m2.south);
+\end{tikzpicture}
+\caption{Pipeline completo de decisi\'on del sistema h\'ibrido.}
+\label{fig:pipeline}
+\end{figure}
+
+\subsection{Funci\'on objetivo global}
+
+La calidad global del sistema se define como:
+
+\begin{equation}
+  Q_{\text{global}} = \underbrace{\eta_H}_{\text{CSP duras}} \cdot
+  \underbrace{\eta_S}_{\text{CSP blandas}} \cdot
+  \underbrace{(1 - P_{\text{riesgo}})}_{\text{Bayes}} \cdot
+  \underbrace{\frac{V^*(s_{\text{init}})}{V_{\max}}}_{\text{MDP}}
+  \label{eq:global}
+\end{equation}
+
+El sistema busca maximizar $Q_{\text{global}}$ a trav\'es del pipeline de cuatro m\'odulos.
+
+%% ============================================================================
+\chapter{Herramientas Aplicadas}
+\label{ch:herramientas}
+
+\section{Stack tecnol\'ogico}
+
+\begin{table}[H]
+\centering
+\caption{Herramientas y bibliotecas del proyecto.}
+\begin{tabular}{llp{7cm}}
+\toprule
+\textbf{Herramienta} & \textbf{Versi\'on} & \textbf{Uso} \\
+\midrule
+Python & 3.11 & Lenguaje principal \\
+Jupyter Notebook & 7.x & Documentaci\'on ejecutable (.ipynb) \\
+NumPy / Pandas & 1.26 / 2.1 & Manejo de datos y matrices \\
+scikit-learn & 1.4 & Modelos ML, CV, m\'etricas \\
+pgmpy & 0.1.x & Redes bayesianas e inferencia \\
+Matplotlib / Seaborn & 3.8 & Visualizaci\'on \\
+\texttt{constraint} & 1.4 & Biblioteca CSP de referencia \\
+Overleaf & --- & Documentaci\'on LaTeX \\
+Git / GitHub & --- & Repositorio p\'ublico y control de versiones \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Uso de IA Generativa}
+\label{sec:ia}
+
+\begin{importante}
+Esta secci\'on documenta, conforme a las instrucciones del curso, el uso de
+herramientas de IA generativa como apoyo al desarrollo del proyecto.
+\end{importante}
+
+\subsection{Prompts utilizados}
+
+\begin{enumerate}[leftmargin=2em,itemsep=8pt]
+
+  \item \textbf{Prompt de exploraci\'on del dise\~no h\'ibrido:}
+  \begin{quote}\itshape
+  ``Necesito dise\~nar un sistema de planificaci\'on acad\'emica que use m\'as de una
+  t\'ecnica de IA.  Qu\'e combinaci\'on de m\'etodos ser\'ia coherente y justificable?
+  Quiero que se relacione con: aprendizaje supervisado, CSP, redes bayesianas y MDP.''
+  \end{quote}
+  \textbf{Por qu\'e funcion\'o:} el prompt especific\'o expl\'icitamente las cuatro
+  t\'ecnicas objetivo, lo que orient\'o la respuesta hacia integraci\'on real en lugar
+  de descripci\'on aislada de cada m\'etodo.
+
+  \vspace{3cm}
+
+  \item \textbf{Prompt de formalizaci\'on del MDP:}
+  \begin{quote}\itshape
+  ``Dame un ejemplo concreto de c\'omo modelar la replanificaci\'on de horarios como
+  un MDP: define estados, acciones, recompensas y la ecuaci\'on de Bellman aplicada.''
+  \end{quote}
+  \textbf{Por qu\'e funcion\'o:} solicitar un ejemplo concreto con los componentes
+  formales oblig\'o a la IA a producir definiciones precisas, verificables contra la
+  bibliograf\'ia del curso.
+
+  \item \textbf{Prompt de depuraci\'on del m\'odulo CSP:}
+  \begin{quote}\itshape
+  ``Mi forward checking no est\'a propagando correctamente cuando hay m\'as de un docente
+  elegible por secci\'on.  Revisa este c\'odigo y explica el error conceptual.''
+  \end{quote}
+  \textbf{Por qu\'e funcion\'o:} proporcionar el c\'odigo real permiti\'o un
+  diagn\'ostico preciso; la IA no invent\'o el problema.
+
+\end{enumerate}
+
+\subsection{Evoluci\'on de la idea}
+
+\begin{description}[leftmargin=2em,itemsep=4pt]
+  \item[\textbf{Iteraci\'on 1.}] Inicio con solo CSP. La IA help\'o a identificar
+    que el problema era m\'as rico e incluir predicci\'on y riesgo.
+  \item[\textbf{Iteraci\'on 2.}] Incorporaci\'on del m\'odulo ML para predicci\'on
+    de demanda; la IA sugiri\'o el pipeline de datos y la selecci\'on de features.
+  \item[\textbf{Iteraci\'on 3.}] Dise\~no de la red bayesiana; la IA explic\'o la
+    estructura de nodos; la topolog\'ia final fue dise\~nada y validada por el equipo.
+  \item[\textbf{Iteraci\'on 4.}] Formalizaci\'on del MDP; ecuaciones y pseudoc\'odigo
+    fueron desarrollados por el equipo con la IA como referencia.
+\end{description}
+
+\subsection{Delimitaci\'on entre asistencia IA e implementaci\'on propia}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{p{7cm}cc}
+\toprule
+\textbf{Componente} & \textbf{Asistencia IA} & \textbf{Propio} \\
+\midrule
+Dise\~no del pipeline h\'ibrido & Orientaci\'on & \checkmark \\
+Modelado formal CSP             & Bibliograf\'ia & \checkmark \\
+Implementaci\'on backtracking + FC & Revisi\'on & \checkmark \\
+Topolog\'ia de la red bayesiana  & Sugerencia & \checkmark \\
+Formalizaci\'on MDP y Bellman    & Referencia & \checkmark \\
+Features de predicci\'on (ML)    & Lista inicial & \checkmark \\
+Dise\~no de experimentos          & Sugerencia & \checkmark \\
+Redacci\'on acad\'emica           & Apoyo estilo & \checkmark \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Repositorio y entregables complementarios}
+
+Todo el c\'odigo fuente est\'a disponible en un repositorio p\'ublico:
+\begin{center}
+\noindent\textbf{Repositorio del proyecto final:} \href{https://github.com/DanielBarillasM/Proyecto-Final_IA_Seccion_10_Grupo_1}{GitHub}
+\end{center}
+
+\begin{enumerate}[leftmargin=2em,itemsep=3pt]
+  \item \textbf{Documento PDF} (este archivo).
+  \item \textbf{Notebook Jupyter} (\texttt{.ipynb}) con implementaci\'on y experimentos.
+  \item \textbf{C\'odigo fuente} organizado por m\'odulos en el repositorio.
+  \item \textbf{Video explicativo} ($\approx$7~min) con demostraci\'on del sistema.
+  \item \textbf{Presentaci\'on} (m\'ax. 10 diapositivas) para la exposici\'on.
+\end{enumerate}
+
+%% ============================================================================
+\chapter{Resultados y M\'etricas}
+\label{ch:resultados}
+
+\section{Metodolog\'ia experimental}
+
+La evaluaci\'on del sistema sigue un protocolo por m\'odulo:
+
+\begin{enumerate}[leftmargin=2em,itemsep=4pt]
+  \item \textbf{M\'odulo ML}: validaci\'on cruzada 5-fold sobre datos hist\'oricos
+    sint\'eticos generados con distribuciones realistas; comparaci\'on de 5~modelos.
+  \item \textbf{M\'odulo CSP}: instancias de tama\~no Tiny/Small/Medium/Large;
+    comparaci\'on de BT~puro, BT+FC+MRV+LCV y Beam~Search.
+  \item \textbf{M\'odulo Bayes}: validaci\'on de la red bayesiana con tablas de
+    probabilidad condicional estimadas; comparaci\'on con frecuencias emp\'iricas.
+  \item \textbf{M\'odulo MDP}: evaluaci\'on de la pol\'itica mediante simulaci\'on
+    de contingencias aleatorias; comparaci\'on con pol\'itica aleatoria y greedy.
+\end{enumerate}
+
+\section{M\'etricas por m\'odulo}
+
+\begin{table}[H]
+\centering
+\caption{M\'etricas de evaluaci\'on por m\'odulo. \textit{Plantilla de resultados.}}
+\label{tab:metricas}
+\begin{tabular}{llll}
+\toprule
+\textbf{M\'odulo} & \textbf{M\'etrica} & \textbf{Definici\'on} & \textbf{Objetivo} \\
+\midrule
+ML & RMSE & $\sqrt{\frac{1}{N}\sum(y_i-\hat{y}_i)^2}$ & Minimizar \\
+ML & F1-score & $2\cdot\frac{P\cdot R}{P+R}$ & Maximizar \\
+CSP & $\eta_H$ & Fracci\'on restricc. duras satisfechas & $=1.0$ \\
+CSP & $\eta_S$ & Weight de restricc. blandas & Maximizar \\
+CSP & Backtracks & N\'um. de retrocesos & Minimizar \\
+CSP & $T$ (s) & Tiempo de c\'omputo & Minimizar \\
+Bayes & Log-likelihood & $\sum \log P(e_i|\mathcal{B})$ & Maximizar \\
+Bayes & Brier score & $\frac{1}{N}\sum(p_i-o_i)^2$ & Minimizar \\
+MDP & Utilidad esp. & $\mathbb{E}[V^*(s_0)]$ & Maximizar \\
+MDP & Tasa resol. & Prop. contingencias resueltas & Maximizar \\
+Global & $Q_{\text{global}}$ & Ec.~\eqref{eq:global} & Maximizar \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Instancias de prueba}
+
+\begin{table}[H]
+\centering
+\caption{Instancias de prueba para el m\'odulo CSP. \textit{Espacio para resultados reales.}}
+\label{tab:inst}
+\begin{tabular}{ccccccccc}
+\toprule
+\textbf{Inst.} & $n$ & $t$ & $r$ & $p$ &
+  $\eta_H$ & $\eta_S$ & Backtracks & $T$(s) \\
+\midrule
+Tiny   & 10  & 10 & 5  & 4  & --- & --- & --- & --- \\
+Small  & 25  & 15 & 8  & 8  & --- & --- & --- & --- \\
+Medium & 50  & 20 & 12 & 15 & --- & --- & --- & --- \\
+Large  & 100 & 25 & 20 & 25 & --- & --- & --- & --- \\
+\bottomrule
+\multicolumn{9}{l}{\small Los valores ``---'' ser\'an completados con resultados experimentales reales.}
+\end{tabular}
+\end{table}
+
+\section{Comparaci\'on de modelos ML}
+
+\begin{table}[H]
+\centering
+\caption{Comparaci\'on de modelos para predicci\'on de demanda. \textit{Ejemplo ilustrativo.}}
+\label{tab:ml_comp}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Modelo} & \textbf{RMSE} & \textbf{MAE} & \textbf{F1} & \textbf{AUC} \\
+\midrule
+Regresi\'on lineal   & ---   & ---   & ---  & ---  \\
+\'Arbol de decisi\'on & ---   & ---   & ---  & ---  \\
+Naive Bayes         & ---   & ---   & ---  & ---  \\
+SVM                 & ---   & ---   & ---  & ---  \\
+Red neuronal (MLP)  & ---   & ---   & ---  & ---  \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Comparaci\'on de estrategias de b\'usqueda CSP}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=12cm,height=6cm,
+  xlabel={Tama\~no de instancia ($n$)},
+  ylabel={Backtracks (escala log)},
+  ymode=log,
+  xtick={10,25,50,100},
+  xticklabels={Tiny,Small,Medium,Large},
+  legend pos=north west,
+  grid=major,grid style={dashed,gray!30},thick,
+  title={\itshape Ejemplo ilustrativo -- reemplazar con datos reales},
+  title style={font=\small\itshape,color=MedGray}
+]
+\addplot[color=WarnOrange,mark=square*,dashed]
+  coordinates{(10,12)(25,380)(50,15000)(100,2100000)};
+\addlegendentry{BT puro}
+\addplot[color=AccentBlue,mark=*,thick]
+  coordinates{(10,5)(25,42)(50,310)(100,4200)};
+\addlegendentry{BT+FC+MRV+LCV}
+\addplot[color=SuccessGreen,mark=triangle*,thick]
+  coordinates{(10,0.1)(25,0.1)(50,0.1)(100,0.1)};
+\addlegendentry{Beam Search ($k=5$)}
+\end{axis}
+\end{tikzpicture}
+\caption{Comparaci\'on ilustrativa de backtracks por estrategia de b\'usqueda.}
+\label{fig:bt_comp}
+\end{figure}
+
+\section{Ablation study}
+
+\begin{table}[H]
+\centering
+\caption{Ablation study del sistema h\'ibrido. \textit{Espacio para resultados reales.}}
+\label{tab:ablation}
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Configuraci\'on} & \textbf{ML} & \textbf{CSP} & \textbf{Bayes} & \textbf{MDP} &
+  $Q_{\text{global}}$ \\
+\midrule
+Solo CSP            & $\times$ & \checkmark & $\times$ & $\times$ & --- \\
+ML + CSP            & \checkmark & \checkmark & $\times$ & $\times$ & --- \\
+ML + CSP + Bayes    & \checkmark & \checkmark & \checkmark & $\times$ & --- \\
+Sistema completo    & \checkmark & \checkmark & \checkmark & \checkmark & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%% ============================================================================
+\chapter{Conclusiones}
+\label{ch:conclusiones}
+
+\section{Conclusiones}
+
+\begin{enumerate}[leftmargin=2em,itemsep=6pt]
+
+  \item \textbf{Integraci\'on coherente de m\'ultiples t\'ecnicas de IA.}
+    El sistema h\'ibrido demuestra que ML, CSP, redes bayesianas y MDP no son
+    herramientas aisladas: cada una resuelve una capa espec\'ifica del problema
+    y sus salidas se encadenan de forma l\'ogica en el pipeline de decisi\'on.
+
+  \item \textbf{Superiodidad esperada del enfoque h\'ibrido.}
+    Con base en los fundamentos te\'oricos, se espera que el sistema completo
+    (Tabla~\ref{tab:ablation}) supere a cualquier m\'odulo en solitario,
+    ya que la predicci\'on de ML reduce el dominio del CSP, la red bayesiana
+    detecta riesgos que el CSP no modela, y el MDP garantiza resiliencia ante
+    contingencias.
+
+  \item \textbf{Aplicabilidad real.}
+    El problema de planificaci\'on acad\'emica es un caso de uso real en cualquier
+    universidad. Los m\'odulos propuestos son implementables con bibliotecas
+    abiertas de Python y datos hist\'oricos de inscripci\'on.
+
+  \item \textbf{Cobertura de los temas del curso.}
+    El proyecto integra expl\'icitamente: agentes inteligentes, b\'usqueda
+    heur\'istica, CSP/factor graphs, beam search, redes bayesianas,
+    aprendizaje supervisado y MDP, demostrando una comprensi\'on transversal
+    del curso de IA.
+
+\end{enumerate}
+
+\section{Limitaciones}
+
+\begin{itemize}[leftmargin=2em,itemsep=4pt]
+  \item La red bayesiana requiere estimaci\'on manual de las tablas de probabilidad
+    condicional en ausencia de datos hist\'oricos suficientes.
+  \item El MDP simplificado asume un espacio de estados finito y discreto; la
+    realidad puede ser m\'as compleja.
+  \item La escalabilidad del backtracking disminuye para instancias con $n > 150$
+    secciones sin optimizaciones adicionales.
+\end{itemize}
+
+%% ===========================================================================
+
+\nocite{*}
+\printbibliography[heading=bibintoc,title={Bibliografía}]
+
+\end{document}
