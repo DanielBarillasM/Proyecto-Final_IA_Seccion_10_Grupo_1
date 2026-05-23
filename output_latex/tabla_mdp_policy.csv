@@ -1,0 +1,7 @@
+state,V(s),policy
+normal,139.999991537056,open_extra
+high_demand,160.4877964151048,open_extra
+room_issue,165.93405747112195,move_room
+teacher_issue,163.73625527331978,move_slot
+high_risk,161.33901592729993,open_extra
+resolved,179.99999153705605,notify_coordination

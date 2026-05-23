@@ -1,0 +1,9 @@
+Alta_Demanda,Disp_Docente,Disp_Aula,P(Replanif=1),Nivel
+0,0,0,0.5788,alto
+0,0,1,0.499,medio
+0,1,0,0.4724,medio
+0,1,1,0.1798,bajo
+1,0,0,0.8192,critico
+1,0,1,0.7902,critico
+1,1,0,0.7653,critico
+1,1,1,0.6657,alto

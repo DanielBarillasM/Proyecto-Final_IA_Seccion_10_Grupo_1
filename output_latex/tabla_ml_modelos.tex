@@ -1,0 +1,15 @@
+\begin{table}
+\caption{Comparacion de modelos para prediccion de riesgo academico.}
+\label{tab:ml_comp_real}
+\begin{tabular}{lrrrrr}
+\toprule
+Modelo & Accuracy & Precision & Recall & F1 & AUC \\
+\midrule
+RandomForest\_fast & 0.933000 & 0.972000 & 0.900000 & 0.934000 & 0.981000 \\
+ExtraTrees\_fast & 0.929000 & 0.967000 & 0.895000 & 0.930000 & 0.974000 \\
+LogisticRegression & 0.871000 & 0.896000 & 0.855000 & 0.875000 & 0.942000 \\
+SGD\_log\_loss & 0.858000 & 0.835000 & 0.910000 & 0.871000 & 0.939000 \\
+Dummy\_baseline & 0.528000 & 0.528000 & 1.000000 & 0.691000 & 0.500000 \\
+\bottomrule
+\end{tabular}
+\end{table}

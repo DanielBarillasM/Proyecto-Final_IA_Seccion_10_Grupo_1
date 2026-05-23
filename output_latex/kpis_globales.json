@@ -1,0 +1,18 @@
+{
+  "data_mode": "OULAD real",
+  "n_observations": 11999,
+  "best_model": "RandomForest_fast",
+  "train_time_total": 0.66,
+  "accuracy": 0.9333,
+  "f1": 0.9344,
+  "roc_auc": 0.9809,
+  "threshold": 0.23,
+  "n_modules": 7,
+  "n_sections": 10,
+  "csp_backtracks": 0,
+  "bn_log_likelihood": -27.1606,
+  "bn_brier_score": 0.117,
+  "bn_mean_risk": 0.7188,
+  "bn_n_critico": 7,
+  "mdp_best_action": "open_extra"
+}
