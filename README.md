@@ -17,7 +17,7 @@
 
 ## Video
 
-**Link de video:** 
+**Link de video:** https://youtu.be/ChDjMZwtwaM
 
 ---
 
@@ -147,9 +147,9 @@ El módulo compara varios modelos, entre ellos:
 
 El mejor modelo reportado en la ejecución incluida fue:
 
-$$
+$
 \text{RandomForest\_fast}
-$$
+$
 
 con métricas aproximadas:
 
@@ -714,9 +714,8 @@ El equipo revisó y ajustó el contenido para que la implementación coincidiera
 
 La bibliografía formal completa se encuentra en:
 
-```text
-Proyecto-Final_IA_Seccion_10_Grupo_1/informe/referencias.bib
-```
+[Referencias](informe/referencias.bib)
+
 
 ---
 
@@ -734,6 +733,4 @@ Este proyecto se desarrolla con fines académicos para el curso **CC3045 — Int
 
 La licencia del repositorio se encuentra en:
 
-```text
-Proyecto-Final_IA_Seccion_10_Grupo_1/Licencia/LICENSE
-```
+[Licencia](Licencia/LICENSE)
