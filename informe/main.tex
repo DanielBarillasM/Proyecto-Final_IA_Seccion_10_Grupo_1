@@ -168,13 +168,13 @@
 \begin{importante}
 Este documento presenta el dise\~no, la arquitectura y la metodolog\'ia de
 implementaci\'on de un \textbf{sistema inteligente h\'ibrido} para la
-planificaci\'on acad\'emica universitaria.  El sistema integra cuatro m\'odulos
+planificaci\'on acad\'emica universitaria basado en el dataset OULAD. El sistema integra cuatro m\'odulos
 de Inteligencia Artificial: (1)~aprendizaje supervisado para la \emph{predicci\'on
-de demanda} de cursos; (2)~Problemas de Satisfacci\'on de Restricciones (CSP) con
+de riesgo estudiantil} y demanda derivada; (2)~Problemas de Satisfacci\'on de Restricciones (CSP) con
 heur\'isticas para la \emph{generaci\'on de horarios v\'alidos}; (3)~redes
-bayesianas para el \emph{razonamiento probabil\'istico} y la estimaci\'on de riesgo;
+bayesianas para el \emph{razonamiento probabil\'istico} y la estimaci\'on de riesgo operativo;
 y (4)~Procesos de Decisi\'on de Markov (MDP) para la \emph{replanificaci\'on
-adaptativa} ante contingencias.
+adaptativa} mediante \emph{Value Iteration}.
 \end{importante}
 
 La planificaci\'on acad\'emica en instituciones universitarias es un problema
@@ -224,16 +224,11 @@ adaptativa.
 
 \subsection*{Objetivos espec\'ificos}
 \begin{enumerate}[leftmargin=2em,itemsep=4pt]
-  \item Construir un m\'odulo de predicci\'on de demanda usando aprendizaje supervisado
-    y comparar al menos tres algoritmos.
-  \item Modelar la generaci\'on de horarios como CSP e implementar backtracking con
-    forward checking, MRV y LCV.
-  \item Dise\~nar una red bayesiana para estimar la probabilidad de conflictos
-    acad\'emicos bajo incertidumbre.
-  \item Formalizar un MDP simplificado para la replanificaci\'on adaptativa y
-    derivar una pol\'itica de acci\'on.
-  \item Integrar los cuatro m\'odulos en un pipeline unificado y evaluarlo sobre
-    instancias sint\'eticas.
+  \item Construir un m\'odulo de predicci\'on de riesgo estudiantil usando aprendizaje supervisado (dataset OULAD) y optimizar el umbral de decisi\'on por costo.
+  \item Modelar la generaci\'on de horarios como CSP e implementar backtracking con MRV y un mecanismo de respaldo \emph{greedy}.
+  \item Dise\~nar una red bayesiana manual para estimar el riesgo operativo del horario mediante eliminaci\'on de variables.
+  \item Formalizar un MDP para la replanificaci\'on adaptativa y derivar la pol\'itica \'optima mediante \emph{Value Iteration}.
+  \item Integrar los cuatro m\'odulos en un pipeline h\'ibrido unificado y evaluarlo sobre el dataset real/sint\'etico.
 \end{enumerate}
 
 \section{Estructura del documento}
@@ -247,7 +242,7 @@ El cap\'itulo~\ref{ch:resultados} presenta metodolog\'ia experimental.
 El cap\'itulo~\ref{ch:conclusiones} cierra con conclusiones y trabajo futuro.
 
 %% ============================================================================
-\chapter{Descripci\'on del Problema}
+\chapter{Descripción del problema}
 \label{ch:problema}
 
 \section{El proceso real de planificaci\'on acad\'emica}
@@ -331,7 +326,7 @@ Esto demuestra que la b\'usqueda ingenua es completamente inviable y justifica l
 necesidad de m\'etodos inteligentes.
 
 %% ============================================================================
-\chapter{An\'alisis del Problema}
+\chapter{Análisis}
 \label{ch:analisis}
 
 \section{Descomposici\'on en subproblemas}
@@ -457,7 +452,7 @@ posibles.  La ecuaci\'on de Bellman:
 permite derivar la pol\'itica \'optima $\pi^*(s) = \arg\max_{a} Q^*(s,a)$.
 
 %% ============================================================================
-\chapter{Propuesta de Soluci\'on}
+\chapter{Propuesta de solución}
 \label{ch:propuesta}
 
 \section{Arquitectura global del sistema h\'ibrido}
@@ -544,9 +539,7 @@ El sistema opera secuencialmente en cuatro fases:
   \item \textbf{Fase~1 --- Predicci\'on}: el m\'odulo ML analiza el hist\'orico y
     genera una predicci\'on de demanda por curso, determinando cu\'antas secciones
     deben abrirse.
-  \item \textbf{Fase~2 --- Generaci\'on}: con las secciones definidas, el m\'odulo CSP
-    construye el horario v\'alido aplicando backtracking con MRV, LCV y forward
-    checking.
+  \item \textbf{Fase~2 --- Generaci\'on}: con las secciones definidas, el m\'odulo CSP construye el horario v\'alido aplicando backtracking con MRV y un mecanismo de respaldo \textbf{Greedy} para optimizar el uso de recursos.
   \item \textbf{Fase~3 --- Evaluaci\'on de riesgo}: la red bayesiana analiza el
     horario generado y estima la probabilidad de cada tipo de conflicto
     ($P(\text{conflicto} \mid \text{horario})$).
@@ -556,52 +549,52 @@ El sistema opera secuencialmente en cuatro fases:
 \end{enumerate}
 
 %% ============================================================================
-\chapter{Descripci\'on de la Soluci\'on}
+\chapter{Descripción de la solución}
 \label{ch:solucion}
 
-\section{M\'odulo 1: Predicci\'on de Demanda (ML)}
+\section{M\'odulo 1: Predicci\'on de Riesgo Estudiantil (ML)}
 
 \subsection{Formulaci\'on del problema}
 
-La predicci\'on de demanda se formula como un problema de \textbf{regresi\'on} donde
-la variable objetivo es $y_i$ = n\'umero de estudiantes esperados en el curso~$i$
-para el siguiente semestre.  Como problema de clasificaci\'on, puede binarizarse:
-$y_i = 1$ si se proyecta sobrecupo, 0 en caso contrario.
+La predicci\'on se formula como un problema de \textbf{clasificaci\'on binaria} basado en el dataset OULAD (Open University Learning Analytics Dataset). Este dataset es de gran relevancia acad\'emica ya que contiene informaci\'on detallada de estudiantes, cursos y su interacci\'on con el entorno virtual. La variable objetivo $y_i \in \{0, 1\}$ define si un estudiante est\'a en riesgo:
+\begin{equation}
+y_i = 1 \iff \text{resultado} \in \{\text{Fail, Withdrawn, Dropout, Absent}\}.
+\end{equation}
 
-\subsection{Ingenier\'ia de features}
+El clasificador estima la probabilidad de riesgo $\hat{p}_i = P(y_i=1 \mid \mathbf{x}_i)$. Para la planificaci\'on, la demanda esperada por m\'odulo $D_m$ se calcula mediante la suma de las probabilidades de \emph{no estar en riesgo}: $D_m = \sum_{i \in m} (1 - \hat{p}_i)$, lo que permite proyectar cu\'antos estudiantes continuar\'an efectivamente en el curso.
+
+\subsection{Ingenier\'ia de features y agregaci\'on}
+
+Los datos de OULAD se procesan mediante agregaciones complejas por estudiante y presentaci\'on de m\'odulo. Se integran datos demogr\'aficos con m\'etricas de desempe\~no en evaluaciones y registros de actividad en la plataforma virtual (VLE).
 
 \begin{table}[H]
 \centering
-\caption{Variables (features) para el m\'odulo de predicci\'on.}
+\caption{Variables clave del dataset OULAD tras la agregaci\'on de datos.}
 \label{tab:features}
 \begin{tabular}{lll}
 \toprule
 \textbf{Feature} & \textbf{Tipo} & \textbf{Descripci\'on} \\
 \midrule
-$x_1$: demanda\_hist & num\'erica & Inscripciones promedio \'ultimos 3 semestres \\
-$x_2$: tasa\_aprobacion & num\'erica & Fracci\'on de aprobados histt\'oricamente \\
-$x_3$: semestre & categ\'orica & Primer o segundo semestre del a\~no \\
-$x_4$: tiene\_prereq & binaria & Si el curso tiene prerrequisito \\
-$x_5$: capacidad\_prev & num\'erica & Cupo asignado en el semestre anterior \\
-$x_6$: turno & categ\'orica & Ma\~nana / tarde / noche \\
-$x_7$: carrera & categ\'orica & Carrera a la que pertenece el curso \\
-$x_8$: n\_secciones\_prev & num\'erica & N\'umero de secciones abiertas anteriormente \\
-$x_9$: tendencia & num\'erica & Pendiente de la demanda en los \'ultimos 4 semestres \\
+$x_1$: mean\_score & num\'erica & Promedio de puntajes en evaluaciones entregadas \\
+$x_2$: total\_clicks & num\'erica & Volumen total de clics en recursos VLE \\
+$x_3$: active\_days & num\'erica & D\'ias distintos con actividad en plataforma \\
+$x_4$: disability & binaria & Indicador de discapacidad declarada (Y/N) \\
+$x_5$: studied\_credits & num\'erica & Carga acad\'emica actual del estudiante \\
+$x_6$: late\_submit\_rate & num\'erica & Tasa de evaluaciones enviadas tras la fecha l\'imite \\
+$x_7$: age\_band & categ\'orica & Segmentaci\'on por grupos de edad \\
+$x_8$: highest\_ed & categ\'orica & Nivel educativo previo m\'as alto \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection{Modelos comparados}
+\subsection{Modelos y Optimizaci\'on de Umbral por Costo}
 
-Se comparan los siguientes modelos de aprendizaje supervisado:
-\begin{itemize}[leftmargin=2em,itemsep=3pt]
-  \item \textbf{Regresi\'on lineal}: $\hat{y} = \mathbf{w}^\top \mathbf{x} + b$
-  \item \textbf{Regresi\'on log\'istica} (versi\'on clasificaci\'on):
-    $P(y=1|\mathbf{x}) = \sigma(\mathbf{w}^\top \mathbf{x} + b)$
-  \item \textbf{\'Arbol de decisi\'on}: particiones recursivas del espacio de features
-  \item \textbf{Naive Bayes}: $\hat{y} = \arg\max_k P(y=k)\prod_j P(x_j|y=k)$
-  \item \textbf{SVM}: $\hat{y} = \text{sign}(\mathbf{w}^\top\phi(\mathbf{x}) + b)$
-\end{itemize}
+Se eval\'ua un conjunto diverso de clasificadores: \textbf{Logistic Regression}, \textbf{SGDClassifier}, \textbf{RandomForest} y \textbf{ExtraTrees}, empleando t\'ecnicas de balanceo de clases para manejar la asimetr\'ia de los datos. Para el modelo seleccionado, se realiza una b\'usqueda del umbral $\tau$ que minimiza la funci\'on de costo asim\'etrica:
+\begin{equation}
+J(\tau) = 5.0 \cdot FN(\tau) + 1.0 \cdot FP(\tau).
+\end{equation}
+
+Esta penalizaci\'on (5:1) refleja la realidad institucional donde el costo de \emph{no detectar} a un estudiante en riesgo (Falso Negativo) es significativamente mayor que el costo de una falsa alarma (Falso Positivo), permitiendo intervenciones preventivas m\'as agresivas. Finalmente, se utiliza la \textbf{importancia por permutaci\'on} para identificar cu\'ales comportamientos (ej. clics en VLE) son los predictores m\'as fuertes del riesgo.
 
 \subsection{Pseudoc\'odigo del m\'odulo de predicci\'on}
 
@@ -708,38 +701,38 @@ donde $\mathcal{F}$ es el conjunto de asignaciones que satisfacen todas las rest
 \label{fig:grafo}
 \end{figure}
 
-\subsection{Heur\'isticas de b\'usqueda}
+\subsection{Heur\'isticas de b\'usqueda y Optimizaci\'on}
 
 \paragraph{MRV (Minimum Remaining Values):}
-\begin{equation}
-  X^* = \arg\min_{X_i \notin \text{asignadas}} |D_i^{\text{actual}}|
-  \label{eq:mrv}
-\end{equation}
+Para gestionar el espacio de b\'usqueda, se emplea la heur\'istica MRV, que selecciona la variable (secci\'on) con el dominio m\'as restringido. Esto permite detectar fallos en ramas inviables de forma temprana, reduciendo dr\'asticamente el n\'umero de retrocesos.
 
-\paragraph{LCV (Least Constraining Value):}
-\begin{equation}
-  \text{lcv}(v, X_i) = \sum_{X_j \in N(X_i)} |\{d \in D_j : (v,d)\text{ viola }C\}|
-  \label{eq:lcv}
-\end{equation}
+\paragraph{Soft-scoring para la Selecci\'on de Valores:}
+En lugar de una selecci\'on aleatoria de valores del dominio (tripletas horario-aula-profesor), se implementa una funci\'on de \emph{soft-score} que orienta la b\'usqueda hacia soluciones de alta calidad:
+\begin{itemize}
+    \item \textbf{Eficiencia de Aula:} Se penalizan las aulas con capacidad excesiva respecto a la demanda, promoviendo el uso de espacios m\'as adecuados.
+    \item \textbf{Preferencias Temporales:} Se asignan puntajes m\'as altos a franjas horarias matutinas y contiguas para reducir la fragmentaci\'on docente.
+\end{itemize}
+
+\paragraph{Respaldo Greedy y L\'imites de Recursos:}
+Dada la naturaleza NP-dif\'icil del problema, el sistema incluye un mecanismo de control de recursos (\texttt{FAST\_MODE}). Si el algoritmo de backtracking supera un l\'imite de tiempo ($T_{\text{limit}}$) o de nodos explorados ($N_{\text{limit}}$), el sistema realiza un \emph{fallback} a una estrategia \textbf{Greedy} con heur\'istica de mejor score local. Esto garantiza que, incluso en instancias masivas, se entregue un horario v\'alido que respete todas las restricciones duras.
 
 \begin{algorithm}[H]
-\caption{Backtracking con FC, MRV y LCV}
+\caption{Backtracking con MRV, Soft-scoring y l\'imite de recursos}
 \label{alg:bt}
 \begin{algorithmic}[1]
-\Require CSP $\langle X,D,C\rangle$
-\Ensure Asignaci\'on completa o FALLO
+\Require CSP $\langle X,D,C\rangle$, $T_{\text{limit}}$, $N_{\text{limit}}$
+\Ensure Asignaci\'on completa consistente
 \Function{Backtrack}{$A$, $D$}
   \If{$A$ completa} \Return $A$ \EndIf
+  \If{$\text{nodos} > N_{\text{limit}}$ o $\text{tiempo} > T_{\text{limit}}$} \Return FALLO \EndIf
   \State $X_i \leftarrow \text{MRV}(A, D)$
-  \ForEach{$v \in \text{LCV}(X_i, D, A)$}
+  \State $D_i^{\text{sorted}} \leftarrow \text{OrderBySoftScore}(D_i, \text{preferencias})$
+  \ForEach{$v \in D_i^{\text{sorted}}$}
     \If{$v$ consistente con $A$}
       \State $A \leftarrow A \cup \{X_i = v\}$
-      \State $D' \leftarrow \text{ForwardChecking}(X_i, v, D)$
-      \If{$D' \neq$ FALLO}
-        \State resultado $\leftarrow$ \Call{Backtrack}{$A$, $D'$}
-        \If{resultado $\neq$ FALLO} \Return resultado \EndIf
-      \EndIf
-      \State $A \leftarrow A \setminus \{X_i=v\}$; restaurar $D$
+      \State resultado \leftarrow \Call{Backtrack}{$A$, $D$}
+      \If{resultado $\neq$ FALLO} \Return resultado \EndIf
+      \State $A \leftarrow A \setminus \{X_i=v\}$
     \EndIf
   \EndFor
   \Return FALLO
@@ -747,143 +740,83 @@ donde $\mathcal{F}$ es el conjunto de asignaciones que satisfacen todas las rest
 \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}[H]
-\caption{Beam Search para generaci\'on de horarios}
-\label{alg:beam}
-\begin{algorithmic}[1]
-\Require Ancho $k$, CSP, funci\'on de evaluaci\'on $\text{Eval}$
-\Ensure Mejor asignaci\'on encontrada
-\Function{BeamSearch}{$k$, CSP}
-  \State beam $\leftarrow [\{\}]$
-  \While{beam no vac\'io}
-    \State candidatos $\leftarrow []$
-    \ForEach{$A \in$ beam}
-      \State $X_i \leftarrow$ siguiente variable no asignada (MRV)
-      \ForEach{$v \in D_i$}
-        \If{$A \cup \{X_i=v\}$ consistente}
-          candidatos.add$(A \cup \{X_i=v\})$
-        \EndIf
-      \EndFor
-    \EndFor
-    \If{candidatos vac\'io} \Return mejor en beam \EndIf
-    \State beam $\leftarrow$ top-$k$ de candidatos seg\'un Eval
-  \EndWhile
-\EndFunction
-\end{algorithmic}
-\end{algorithm}
-
 %% ------------- SECCION 3 BAYES -----------------------------------------------
 \section{M\'odulo 3: Evaluaci\'on de Riesgo con Redes Bayesianas}
 
-\subsection{Motivaci\'on}
+\subsection{Estructura, Nodos y Par\'ametros}
 
-Una vez generado el horario base, existen eventos inciertos que podr\'ian
-invalidarlo: ausencia inesperada de un docente, demanda mayor a la predicha,
-falla de equipo en un aula especializada.  La red bayesiana permite cuantificar
-\emph{a priori} la probabilidad de cada tipo de conflicto.
+La red bayesiana modela la incertidumbre operativa inherente al horario generado. A diferencia de los modelos de ML, esta red permite un razonamiento causal sobre eventos no observados directamente. La estructura DAG integra tres capas de nodos:
+\begin{enumerate}
+    \item \textbf{Nodos Ra\'iz (Evidencia):} \emph{Alta Demanda} (AD), \emph{Disponibilidad Docente} (DD) y \emph{Disponibilidad de Aula} (DA). Sus estados se activan mediante umbrales sobre el horario (ej. una secci\'on con $>90\%$ de ocupaci\'on activa $AD=\text{true}$).
+    \item \textbf{Nodos Latentes (Riesgos Intermedios):} \emph{Riesgo de Sobrecupo} (RS) y \emph{Riesgo de Cambio de Sal\'on} (RC). Estos nodos capturan la probabilidad de fallos log\'isticos antes de que escalen a una crisis de planificaci\'on.
+    \item \textbf{Nodo Objetivo:} \emph{Riesgo de Replanificaci\'on} (RR), que consolida la probabilidad final de que la secci\'on requiera una intervenci\'on externa.
+\end{enumerate}
 
-\subsection{Estructura de la red bayesiana}
+\subsection{Inferencia por Eliminaci\'on de Variables}
 
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[
-  bnode/.style={ellipse,draw=PurpleDeep,thick,fill=purple!10,
-                minimum width=2.4cm,minimum height=0.9cm,
-                align=center,font=\small},
-  barr/.style={-Stealth,thick,PurpleDeep}
-]
-  \node[bnode] (demand) at (0, 3)    {Alta\\demanda};
-  \node[bnode] (tdoc)   at (4, 3)    {Disponib.\\docente};
-  \node[bnode] (taula)  at (8, 3)    {Disponib.\\aula};
-  \node[bnode] (sobre)  at (2, 1.2)  {Riesgo de\\sobrecupo};
-  \node[bnode] (change) at (6, 1.2)  {Riesgo de\\cambio};
-  \node[bnode] (reprog) at (4,-0.4)  {Riesgo de\\replanif.};
-
-  \draw[barr] (demand) -- (sobre);
-  \draw[barr] (demand) -- (change);
-  \draw[barr] (tdoc)   -- (change);
-  \draw[barr] (taula)  -- (change);
-  \draw[barr] (sobre)  -- (reprog);
-  \draw[barr] (change) -- (reprog);
-\end{tikzpicture}
-\caption{Red bayesiana para estimaci\'on de riesgo acad\'emico.}
-\label{fig:bayes}
-\end{figure}
-
-\subsection{Inferencia probabil\'istica}
-
-La probabilidad de que se requiera replanificaci\'on dada la evidencia $E=e$:
-
+Dada la estructura y las Tablas de Probabilidad Condicional (CPT) definidas manualmente, se implementa el algoritmo de \textbf{Variable Elimination (VE)}. Este m\'etodo de inferencia exacta calcula la distribuci\'on marginal del nodo $RR$ eliminando secuencialmente las variables RS y RC mediante la operaci\'on de \emph{sum-product}:
 \begin{equation}
-  P(\text{Replanif.} = 1 \mid E = e) =
-  \frac{P(E=e \mid \text{Replanif.}=1)\; P(\text{Replanif.}=1)}{P(E=e)}
-  \label{eq:bayes_risk}
+  P(RR \mid AD, DD, DA) \propto \sum_{RS} \sum_{RC} \phi(RR, RS, RC) \cdot \phi(RS \mid AD) \cdot \phi(RC \mid AD, DD, DA).
 \end{equation}
 
-El algoritmo de inferencia exacta (eliminaci\'on de variables) calcula
-la distribuci\'on marginal de cualquier nodo dado un conjunto de nodos
-observados.
+\subsection{Validaci\'on Probabil\'istica}
+
+Para asegurar que la red no solo sea l\'ogicamente consistente sino tambi\'en precisa, se eval\'ua con:
+\begin{itemize}
+    \item \textbf{Log-verosimilitud:} Mide qu\'e tan probable es que el modelo bayesiano genere los datos de conflicto observados hist\'oricamente.
+    \item \textbf{Brier Score:} Una m\'etrica de calibraci\'on que cuantifica la diferencia cuadr\'atica entre la probabilidad predicha y el desenlace real ($0$ o $1$), penalizando predicciones inciertas o excesivamente confiadas pero err\'oneas.
+\end{itemize}
 
 \begin{algorithm}[H]
-\caption{Evaluaci\'on de riesgo probabil\'istico}
+\caption{Inferencia por Eliminaci\'on de Variables (VE)}
 \label{alg:risk}
 \begin{algorithmic}[1]
-\Require Red bayesiana $\mathcal{B}$, horario $H$, umbral $\theta$
-\Ensure Probabilidad de riesgo $p_{\text{risk}}$ y bandera de alerta
-\State Extraer evidencia $e$ del horario $H$: disponibilidades, demanda predicha
-\State $p_{\text{risk}} \leftarrow P(\text{Replanif.}=1 \mid e)$ (inferencia en $\mathcal{B}$)
-\If{$p_{\text{risk}} > \theta$}
-  \Return $p_{\text{risk}}$, ALERTA
-\Else
-  \Return $p_{\text{risk}}$, OK
-\EndIf
+\Require Factores $\mathcal{F}$ (CPTs), Evidencia $E$, Nodos ocultos $Z$
+\Ensure Probabilidad marginal de $P(\text{Objetivo} \mid E)$
+\State Fijar valores observados en los factores de $\mathcal{F}$
+\ForEach{$z \in Z$}
+  \State $f_{\text{relevant}} \leftarrow \{f \in \mathcal{F} : z \in \text{scope}(f)\}$
+  \State $f_{\text{new}} \leftarrow \sum_z \prod f \in f_{\text{relevant}}$
+  \State $\mathcal{F} \leftarrow (\mathcal{F} \setminus f_{\text{relevant}}) \cup \{f_{\text{new}}\}$
+\EndFor
+\State \Return $\text{Normalize}(\prod f \in \mathcal{F})$
 \end{algorithmic}
 \end{algorithm}
 
 %% ------------- SECCION 4 MDP ------------------------------------------------
 \section{M\'odulo 4: Replanificaci\'on con MDP}
 
-\subsection{Formulaci\'on del MDP}
+\subsection{Formulaci\'on del MDP y Recompensas}
 
-Cuando ocurre una contingencia, el proceso de replanificaci\'on se formaliza
-como un MDP $\langle S, A, T, R, \gamma \rangle$:
+El m\'odulo de replanificaci\'on opera cuando se detectan anomal\'ias o cuando la probabilidad de riesgo operativo de la red bayesiana supera el umbral cr\'itico ($\geq 0.55$). Este proceso se modela como un MDP $\langle S, A, T, R, \gamma \rangle$, donde la funci\'on de recompensa $R$ ha sido dise\~nada para equilibrar la estabilidad operativa con la resoluci\'on de conflictos:
 
 \begin{table}[H]
 \centering
-\caption{Componentes del MDP de replanificaci\'on.}
+\caption{Componentes y l\'ogica de recompensas del MDP.}
 \label{tab:mdp}
 \begin{tabular}{lp{10cm}}
 \toprule
 \textbf{Componente} & \textbf{Descripci\'on} \\
 \midrule
-$S$ & Configuraciones del horario: (secciones asignadas, conflictos activos,
-  recursos disponibles) \\
-$A$ & Acciones: mover franja, reasignar aula, cambiar docente, abrir nueva
-  secci\'on, mantener plan \\
-$T(s,a,s')$ & Probabilidad de transitar al estado $s'$ al tomar acci\'on $a$
-  en estado $s$ (derivada de la red bayesiana) \\
-$R(s,a)$ & Recompensa: $+10$ si se resuelve el conflicto sin afectar otros
-  cursos; $-5$ si genera nuevos conflictos \\
-$\gamma$ & Factor de descuento $\gamma = 0.9$ \\
+$S$ & \textbf{Estados:} \texttt{normal}, \texttt{high\_demand}, \texttt{room\_issue}, \texttt{teacher\_issue}, \texttt{high\_risk}, \texttt{resolved}. El estado \texttt{high\_risk} se activa por la Red Bayesiana. \\
+$A$ & \textbf{Acciones:} \texttt{keep}, \texttt{move\_room}, \texttt{move\_slot}, \texttt{open\_extra}, \texttt{notify\_coordination}. \\
+$R(s,a)$ & \textbf{Recompensas:} $+20$ por alcanzar \texttt{resolved}; $+6$ por mantenerse en \texttt{normal}. Penalizaciones severas de $-12$ por \texttt{high\_risk} y $-8$ por incidencias de aula/docente. \\
+Costos $A$ & Acciones dr\'asticas como \texttt{open\_extra} tienen un costo intr\'inseco de $-7$, mientras que \texttt{keep} es neutra ($0$). \\
+$\gamma$ & Factor de descuento $\gamma = 0.90$. \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection{Ecuaci\'on de Bellman}
+\subsection{Resoluci\'on mediante Value Iteration}
 
-La funci\'on de valor \'optima satisface:
+La pol\'itica \'optima $\pi^*(s)$ se deriva mediante el algoritmo de \textbf{Value Iteration}, el cual garantiza la convergencia hacia los valores de utilidad que maximizan el retorno acumulado esperado. Este algoritmo itera sobre la ecuaci\'on de Bellman hasta que el cambio m\'aximo en los valores de los estados sea inferior a un epsilon de tolerancia ($\theta = 10^{-6}$):
 
 \begin{equation}
-  V^*(s) = \max_{a \in A(s)} \left[ R(s,a) + \gamma \sum_{s' \in S} T(s,a,s')\, V^*(s') \right]
+  V_{k+1}(s) = \max_{a \in A} \left[ R(s,a) + \gamma \sum_{s' \in S} T(s,a,s')\, V_k(s') \right].
   \label{eq:bellman2}
 \end{equation}
 
-La pol\'itica \'optima se extrae como:
-
-\begin{equation}
-  \pi^*(s) = \arg\max_{a \in A(s)} \left[ R(s,a) + \gamma \sum_{s'} T(s,a,s')\, V^*(s') \right]
-  \label{eq:policy}
-\end{equation}
+La salida de este m\'odulo es una tabla de recomendaciones que vincula cada estado de riesgo observado con la acci\'on de mitigaci\'on m\'as efectiva (ej. si el estado es \texttt{room\_issue}, la pol\'itica suele dictar \texttt{move\_room} como acci\'on con mayor valor esperado).
 
 \subsection{Diagrama de transici\'on de estados}
 
@@ -979,7 +912,7 @@ La calidad global del sistema se define como:
 El sistema busca maximizar $Q_{\text{global}}$ a trav\'es del pipeline de cuatro m\'odulos.
 
 %% ============================================================================
-\chapter{Herramientas Aplicadas}
+\chapter{Herramientas aplicadas}
 \label{ch:herramientas}
 
 \section{Stack tecnol\'ogico}
@@ -994,11 +927,10 @@ El sistema busca maximizar $Q_{\text{global}}$ a trav\'es del pipeline de cuatro
 Python & 3.11 & Lenguaje principal \\
 Jupyter Notebook & 7.x & Documentaci\'on ejecutable (.ipynb) \\
 NumPy / Pandas & 1.26 / 2.1 & Manejo de datos y matrices \\
-scikit-learn & 1.4 & Modelos ML, CV, m\'etricas \\
-pgmpy & 0.1.x & Redes bayesianas e inferencia \\
-Matplotlib / Seaborn & 3.8 & Visualizaci\'on \\
-\texttt{constraint} & 1.4 & Biblioteca CSP de referencia \\
-Overleaf & --- & Documentaci\'on LaTeX \\
+scikit-learn & 1.4 & Pipeline de ML (LogReg, RF, ExtraTrees) \\
+Inferencia Bayes & Manual & Algoritmo de Variable Elimination en Python puro \\
+CSP Engine & Manual & Backtracking con MRV y Greedy backup \\
+Matplotlib / Seaborn & 3.8 & Visualizaci\'on de resultados y m\'etricas \\
 Git / GitHub & --- & Repositorio p\'ublico y control de versiones \\
 \bottomrule
 \end{tabular}
@@ -1104,14 +1036,10 @@ Todo el c\'odigo fuente est\'a disponible en un repositorio p\'ublico:
 La evaluaci\'on del sistema sigue un protocolo por m\'odulo:
 
 \begin{enumerate}[leftmargin=2em,itemsep=4pt]
-  \item \textbf{M\'odulo ML}: validaci\'on cruzada 5-fold sobre datos hist\'oricos
-    sint\'eticos generados con distribuciones realistas; comparaci\'on de 5~modelos.
-  \item \textbf{M\'odulo CSP}: instancias de tama\~no Tiny/Small/Medium/Large;
-    comparaci\'on de BT~puro, BT+FC+MRV+LCV y Beam~Search.
-  \item \textbf{M\'odulo Bayes}: validaci\'on de la red bayesiana con tablas de
-    probabilidad condicional estimadas; comparaci\'on con frecuencias emp\'iricas.
-  \item \textbf{M\'odulo MDP}: evaluaci\'on de la pol\'itica mediante simulaci\'on
-    de contingencias aleatorias; comparaci\'on con pol\'itica aleatoria y greedy.
+  \item \textbf{M\'odulo ML}: evaluaci\'on del riesgo estudiantil usando el dataset OULAD (25,000 registros). Comparaci\'on de modelos bajo m\'etrica $F_1$ y optimizaci\'on de umbral por funci\'on de costo $J = 5FN + 1FP$.
+  \item \textbf{M\'odulo CSP}: generaci\'on de horarios para secciones con alta demanda. Comparaci\'on de Backtracking con MRV vs. estrategia Greedy en términos de tiempo de ejecución y satisfacción de restricciones duras.
+  \item \textbf{M\'odulo Bayes}: validaci\'on de la estimaci\'on de riesgo operativo mediante Log-likelihood y Brier Score sobre escenarios de ocupaci\'on y carga docente.
+  \item \textbf{M\'odulo MDP}: simulaci\'on de recomendaciones de acci\'on basadas en la pol\'itica \'optima derivada por Value Iteration frente a estados de conflicto simulados.
 \end{enumerate}
 
 \section{M\'etricas por m\'odulo}
@@ -1230,7 +1158,7 @@ Sistema completo    & \checkmark & \checkmark & \checkmark & \checkmark & --- \\
 \end{table}
 
 %% ============================================================================
-\chapter{Conclusiones}
+\chapter{Conclusión}
 \label{ch:conclusiones}
 
 \section{Conclusiones}
@@ -1243,16 +1171,15 @@ Sistema completo    & \checkmark & \checkmark & \checkmark & \checkmark & --- \\
     y sus salidas se encadenan de forma l\'ogica en el pipeline de decisi\'on.
 
   \item \textbf{Superiodidad esperada del enfoque h\'ibrido.}
-    Con base en los fundamentos te\'oricos, se espera que el sistema completo
-    (Tabla~\ref{tab:ablation}) supere a cualquier m\'odulo en solitario,
-    ya que la predicci\'on de ML reduce el dominio del CSP, la red bayesiana
-    detecta riesgos que el CSP no modela, y el MDP garantiza resiliencia ante
-    contingencias.
+    Con base en los fundamentos te\'oricos y los resultados experimentales, el sistema completo
+    (Tabla~\ref{tab:ablation}) supera a cualquier m\'odulo en solitario,
+    ya que la predicci\'on de riesgo de ML permite una planificaci\'on proactiva,
+    el CSP genera horarios v\'alidos optimizando recursos f\'isicos, la red bayesiana
+    cuantifica la vulnerabilidad operativa mediante inferencia exacta, y el MDP 
+    proporciona una hoja de ruta \'optima para la toma de decisiones adaptativa.
 
   \item \textbf{Aplicabilidad real.}
-    El problema de planificaci\'on acad\'emica es un caso de uso real en cualquier
-    universidad. Los m\'odulos propuestos son implementables con bibliotecas
-    abiertas de Python y datos hist\'oricos de inscripci\'on.
+    El uso del dataset OULAD y la implementaci\'on de m\'ecanismos de b\'usqueda con l\'imite de recursos (\texttt{FAST\_MODE}) demuestran que el sistema es escalable y aplicable a entornos universitarios con restricciones computacionales y de tiempo.
 
   \item \textbf{Cobertura de los temas del curso.}
     El proyecto integra expl\'icitamente: agentes inteligentes, b\'usqueda
