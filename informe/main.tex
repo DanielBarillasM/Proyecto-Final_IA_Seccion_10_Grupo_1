@@ -6,7 +6,7 @@
 \addbibresource{referencias.bib}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage[spanish,es-nodecimaldot,es-noshorthands]{babel}
 \usepackage{lmodern}
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{graphicx}
@@ -155,7 +155,7 @@
 \end{tabular}}
 \vspace{1.1cm}
 
-{\fontsize{9}{11}\selectfont\color{white!70}Proyecto Final~}
+{\fontsize{9}{11}\selectfont\color{white!70}Proyecto Final}
 \end{center}
 \end{titlepage}
 \nopagecolor
@@ -357,7 +357,7 @@ caracter\'isticas computacionales:
 
 \section{El sistema como agente inteligente}
 
-Siguiendo el paradigma de agentes inteligentes de Russell y Norvig~\cite{russell2020},
+Siguiendo el paradigma de agentes inteligentes de Russell y Norvig~\cite{russell2021aima},
 el sistema puede modelarse como:
 
 \begin{definicion}
@@ -1150,7 +1150,7 @@ ML & Umbral $\tau$ & Umbral de decisi\'on \'optimo (coste)            & ---     
 CSP & $\eta_H$     & Fracci\'on restricc. duras satisfechas           & $=1.0$    & \textbf{1.00} \\
 CSP & $\eta_S$     & Calidad de restricc. blandas                     & Maximizar & 1.00$^*$ \\
 CSP & Backtracks   & N\'um.\ de retrocesos                            & Minimizar & \textbf{0} \\
-CSP & $T$ (s)      & Tiempo de c\'omputo                              & Minimizar & ${<}0.01$ \\
+CSP & $T$ (s)      & Tiempo de c\'omputo                              & Minimizar & $<0.01$ \\
 Bayes & Log-lik.   & $\sum \log P(e_i|\mathcal{B})$                   & Maximizar & $-27.16$ \\
 Bayes & Brier score& $\frac{1}{N}\sum(p_i-o_i)^2$                    & Minimizar & \textbf{0.117} \\
 Bayes & $P(\text{Replanif})$ & Riesgo medio de replanificaci\'on       & Referencia & 0.719 \\
@@ -1177,7 +1177,7 @@ Global & $Q_{\text{global}}$ & Ec.~\eqref{eq:global}                  & Maximiza
 \textbf{Inst.} & $n$ & $t$ & $r$ & $p$ &
   $\eta_H$ & $\eta_S$ & Backtracks & $T$(s) \\
 \midrule
-Tiny   & 10  & 25 & 7  & 8  & 1.00 & 1.00$^*$ & 0 & ${<}0.01$ \\
+Tiny   & 10  & 25 & 7  & 8  & 1.00 & 1.00$^*$ & 0 & $<0.01$ \\
 Small  & 25  & 25 & 7  & 8  & ---  & ---       & ---        & --- \\
 Medium & 50  & 25 & 7  & 8  & ---  & ---       & ---        & --- \\
 Large  & 100 & 25 & 7  & 8  & ---  & ---       & ---        & --- \\
