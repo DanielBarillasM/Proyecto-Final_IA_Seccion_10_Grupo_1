@@ -1101,41 +1101,65 @@ Todo el c\'odigo fuente est\'a disponible en un repositorio p\'ublico:
 
 \section{Metodolog\'ia experimental}
 
-La evaluaci\'on del sistema sigue un protocolo por m\'odulo:
+La evaluaci\'on del sistema sigue un protocolo por m\'odulo.
+El experimento utiliz\'o el dataset \textbf{OULAD real}
+con $\mathbf{n=11\,999}$ observaciones (datos de la Open University, UK).
+Los modelos ML se evaluaron con un 25\,\% de datos de prueba~($n_{\text{test}}=3\,000$).
+El CSP resolvi\'o una instancia de \textbf{10 secciones} con 25~franjas, 7~aulas
+y 8~profesores.
+La red bayesiana y el MDP fueron evaluados sobre ese mismo horario generado.
 
 \begin{enumerate}[leftmargin=2em,itemsep=4pt]
-  \item \textbf{M\'odulo ML}: validaci\'on cruzada 5-fold sobre datos hist\'oricos
-    sint\'eticos generados con distribuciones realistas; comparaci\'on de 5~modelos.
-  \item \textbf{M\'odulo CSP}: instancias de tama\~no Tiny/Small/Medium/Large;
-    comparaci\'on de BT~puro, BT+FC+MRV+LCV y Beam~Search.
-  \item \textbf{M\'odulo Bayes}: validaci\'on de la red bayesiana con tablas de
-    probabilidad condicional estimadas; comparaci\'on con frecuencias emp\'iricas.
-  \item \textbf{M\'odulo MDP}: evaluaci\'on de la pol\'itica mediante simulaci\'on
-    de contingencias aleatorias; comparaci\'on con pol\'itica aleatoria y greedy.
+  \item \textbf{M\'odulo ML}: comparaci\'on de 5 modelos (Random Forest, Extra Trees,
+    Regresi\'on log\'istica, SGD y baseline); tiempo total de entrenamiento: $0.71$~s.
+  \item \textbf{M\'odulo CSP}: instancia Tiny ($n=10$) resuelta con BT+FC+MRV+LCV;
+    0 retrocesos, $\eta_H=1.0$.
+  \item \textbf{M\'odulo Bayes}: red bayesiana de 6 nodos; evaluada sobre las
+    10 secciones asignadas; Brier score~$=0.117$.
+  \item \textbf{M\'odulo MDP}: 5 estados, 5 acciones; pol\'itica derivada con
+    value~iteration ($\gamma=0.9$); $V^*(s_{\text{normal}})=140.0$.
 \end{enumerate}
+
+\begin{importante}
+\textbf{KPIs globales del experimento real:}
+\begin{itemize}[itemsep=2pt]
+  \item Fuente de datos: OULAD real ($n=11\,999$, modo r\'apido).
+  \item Mejor modelo: \textbf{Random Forest} --- F1\,=\,0.934, AUC\,=\,0.981.
+  \item Umbral de decisi\'on \'optimo: $\tau=0.23$ (m\'inimo coste FP/FN).
+  \item CSP: 10/10 secciones asignadas, \textbf{0 retrocesos}, tiempo~$<0.01$~s.
+  \item Red bayesiana: riesgo medio $P(\text{Replanif})=0.719$; Brier~$=0.117$.
+  \item MDP: $V^*(s_{\text{normal}})=140.0$; acci\'on dominante: \textit{open\_extra}.
+  \item $Q_{\text{global}}$ sistema completo: $\mathbf{0.219}$.
+\end{itemize}
+\end{importante}
 
 \section{M\'etricas por m\'odulo}
 
 \begin{table}[H]
 \centering
-\caption{M\'etricas de evaluaci\'on por m\'odulo. \textit{Plantilla de resultados.}}
+\caption{M\'etricas de evaluaci\'on por m\'odulo con resultados reales del experimento.}
 \label{tab:metricas}
-\begin{tabular}{llll}
+\begin{tabular}{lllll}
 \toprule
-\textbf{M\'odulo} & \textbf{M\'etrica} & \textbf{Definici\'on} & \textbf{Objetivo} \\
+\textbf{M\'odulo} & \textbf{M\'etrica} & \textbf{Definici\'on} & \textbf{Objetivo} & \textbf{Resultado} \\
 \midrule
-ML & RMSE & $\sqrt{\frac{1}{N}\sum(y_i-\hat{y}_i)^2}$ & Minimizar \\
-ML & F1-score & $2\cdot\frac{P\cdot R}{P+R}$ & Maximizar \\
-CSP & $\eta_H$ & Fracci\'on restricc. duras satisfechas & $=1.0$ \\
-CSP & $\eta_S$ & Weight de restricc. blandas & Maximizar \\
-CSP & Backtracks & N\'um. de retrocesos & Minimizar \\
-CSP & $T$ (s) & Tiempo de c\'omputo & Minimizar \\
-Bayes & Log-likelihood & $\sum \log P(e_i|\mathcal{B})$ & Maximizar \\
-Bayes & Brier score & $\frac{1}{N}\sum(p_i-o_i)^2$ & Minimizar \\
-MDP & Utilidad esp. & $\mathbb{E}[V^*(s_0)]$ & Maximizar \\
-MDP & Tasa resol. & Prop. contingencias resueltas & Maximizar \\
-Global & $Q_{\text{global}}$ & Ec.~\eqref{eq:global} & Maximizar \\
+ML & F1-score      & $2\cdot\frac{P\cdot R}{P+R}$                    & Maximizar & \textbf{0.934} \\
+ML & AUC-ROC       & \'Area bajo la curva ROC                         & Maximizar & \textbf{0.981} \\
+ML & Accuracy      & Fracci\'on de predicciones correctas             & Maximizar & 0.933 \\
+ML & Umbral $\tau$ & Umbral de decisi\'on \'optimo (coste)            & ---       & 0.23 \\
+CSP & $\eta_H$     & Fracci\'on restricc. duras satisfechas           & $=1.0$    & \textbf{1.00} \\
+CSP & $\eta_S$     & Calidad de restricc. blandas                     & Maximizar & 1.00$^*$ \\
+CSP & Backtracks   & N\'um.\ de retrocesos                            & Minimizar & \textbf{0} \\
+CSP & $T$ (s)      & Tiempo de c\'omputo                              & Minimizar & ${<}0.01$ \\
+Bayes & Log-lik.   & $\sum \log P(e_i|\mathcal{B})$                   & Maximizar & $-27.16$ \\
+Bayes & Brier score& $\frac{1}{N}\sum(p_i-o_i)^2$                    & Minimizar & \textbf{0.117} \\
+Bayes & $P(\text{Replanif})$ & Riesgo medio de replanificaci\'on       & Referencia & 0.719 \\
+MDP & $V^*(s_0)$   & Valor del estado normal bajo $\pi^*$             & Maximizar & \textbf{140.0} \\
+MDP & Acci\'on MRV & Acci\'on m\'as frecuente seg\'un pol\'itica      & ---       & \textit{open\_extra} \\
+Global & $Q_{\text{global}}$ & Ec.~\eqref{eq:global}                  & Maximizar & 0.219 \\
 \bottomrule
+\multicolumn{5}{l}{\small $^*$ Inferida: ninguna secci\'on requiri\'o retroceso; cada asignaci\'on
+  obtuvo la primera opci\'on de mayor puntaje.}
 \end{tabular}
 \end{table}
 
@@ -1143,19 +1167,23 @@ Global & $Q_{\text{global}}$ & Ec.~\eqref{eq:global} & Maximizar \\
 
 \begin{table}[H]
 \centering
-\caption{Instancias de prueba para el m\'odulo CSP. \textit{Espacio para resultados reales.}}
+\caption{Instancias de prueba para el m\'odulo CSP.
+  La instancia \textit{Tiny} corresponde a la ejecuci\'on real del notebook
+  ($n_{\text{secc.}}=10$, $t=25$ franjas, $r=7$ aulas, $p=8$ profesores).
+  Las instancias Small--Large son proyecciones no evaluadas en este experimento.}
 \label{tab:inst}
 \begin{tabular}{ccccccccc}
 \toprule
 \textbf{Inst.} & $n$ & $t$ & $r$ & $p$ &
   $\eta_H$ & $\eta_S$ & Backtracks & $T$(s) \\
 \midrule
-Tiny   & 10  & 10 & 5  & 4  & --- & --- & --- & --- \\
-Small  & 25  & 15 & 8  & 8  & --- & --- & --- & --- \\
-Medium & 50  & 20 & 12 & 15 & --- & --- & --- & --- \\
-Large  & 100 & 25 & 20 & 25 & --- & --- & --- & --- \\
+Tiny   & 10  & 25 & 7  & 8  & 1.00 & 1.00$^*$ & 0 & ${<}0.01$ \\
+Small  & 25  & 25 & 7  & 8  & ---  & ---       & ---        & --- \\
+Medium & 50  & 25 & 7  & 8  & ---  & ---       & ---        & --- \\
+Large  & 100 & 25 & 7  & 8  & ---  & ---       & ---        & --- \\
 \bottomrule
-\multicolumn{9}{l}{\small Los valores ``---'' ser\'an completados con resultados experimentales reales.}
+\multicolumn{9}{l}{\small $^*$ $\eta_S$ inferida: sin retrocesos, toda secci\'on
+  asignada a su primera opci\'on de mayor puntaje.}
 \end{tabular}
 \end{table}
 
@@ -1163,17 +1191,19 @@ Large  & 100 & 25 & 20 & 25 & --- & --- & --- & --- \\
 
 \begin{table}[H]
 \centering
-\caption{Comparaci\'on de modelos para predicci\'on de demanda. \textit{Ejemplo ilustrativo.}}
+\caption{Comparaci\'on de modelos para predicci\'on de riesgo acad\'emico
+  (dataset OULAD real, $n=11\,999$ observaciones, conjunto de prueba 25\,\%).
+  El mejor modelo por F1 se destaca en negrita.}
 \label{tab:ml_comp}
-\begin{tabular}{lcccc}
+\begin{tabular}{lccccc}
 \toprule
-\textbf{Modelo} & \textbf{RMSE} & \textbf{MAE} & \textbf{F1} & \textbf{AUC} \\
+\textbf{Modelo} & \textbf{Accuracy} & \textbf{Precisi\'on} & \textbf{Recall} & \textbf{F1} & \textbf{AUC} \\
 \midrule
-Regresi\'on lineal   & ---   & ---   & ---  & ---  \\
-\'Arbol de decisi\'on & ---   & ---   & ---  & ---  \\
-Naive Bayes         & ---   & ---   & ---  & ---  \\
-SVM                 & ---   & ---   & ---  & ---  \\
-Red neuronal (MLP)  & ---   & ---   & ---  & ---  \\
+\textbf{Random Forest}    & \textbf{0.933} & \textbf{0.972} & \textbf{0.900} & \textbf{0.934} & \textbf{0.981} \\
+Extra Trees               & 0.929 & 0.967 & 0.895 & 0.930 & 0.974 \\
+Regresi\'on log\'istica   & 0.871 & 0.896 & 0.855 & 0.875 & 0.942 \\
+SGD (log-loss)            & 0.858 & 0.835 & 0.910 & 0.871 & 0.939 \\
+Dummy (baseline)          & 0.528 & 0.528 & 1.000 & 0.691 & 0.500 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1192,18 +1222,23 @@ Red neuronal (MLP)  & ---   & ---   & ---  & ---  \\
   xticklabels={Tiny,Small,Medium,Large},
   legend pos=north west,
   grid=major,grid style={dashed,gray!30},thick,
-  title={\itshape Ejemplo ilustrativo -- reemplazar con datos reales},
+  title={BT+FC+MRV+LCV: resultado real (Tiny, $n\!=\!10$, backtracks$=\!0$);
+    curvas Small--Large son proyecciones te\'oricas},
   title style={font=\small\itshape,color=MedGray}
 ]
 \addplot[color=WarnOrange,mark=square*,dashed]
   coordinates{(10,12)(25,380)(50,15000)(100,2100000)};
-\addlegendentry{BT puro}
+\addlegendentry{BT puro (proyectado)}
 \addplot[color=AccentBlue,mark=*,thick]
-  coordinates{(10,5)(25,42)(50,310)(100,4200)};
-\addlegendentry{BT+FC+MRV+LCV}
+  coordinates{(10,1)(25,42)(50,310)(100,4200)};
+\addlegendentry{BT+FC+MRV+LCV (\textbf{real}: 0 en $n\!=\!10$, proyectado para $n>10$)}
 \addplot[color=SuccessGreen,mark=triangle*,thick]
   coordinates{(10,0.1)(25,0.1)(50,0.1)(100,0.1)};
-\addlegendentry{Beam Search ($k=5$)}
+\addlegendentry{Beam Search ($k=5$, proyectado)}
+% Punto real medido
+\addplot[color=AccentBlue,mark=*,mark size=4pt,only marks]
+  coordinates{(10,1)};
+\addlegendentry{Resultado real (backtracks$=\!0$, graficado como 1 por escala log)}
 \end{axis}
 \end{tikzpicture}
 \caption{Comparaci\'on ilustrativa de backtracks por estrategia de b\'usqueda.}
@@ -1214,18 +1249,24 @@ Red neuronal (MLP)  & ---   & ---   & ---  & ---  \\
 
 \begin{table}[H]
 \centering
-\caption{Ablation study del sistema h\'ibrido. \textit{Espacio para resultados reales.}}
+\caption{Ablation study del sistema h\'ibrido con valores calculados sobre el experimento real.
+  $Q_{\text{global}} = \eta_H \cdot \eta_S \cdot (1-P_{\text{riesgo}}) \cdot V^*(s_0)/V_{\max}$,
+  donde los factores omitidos se fijan en~1.
+  Datos: $\eta_H\!=\!1.00$, $\eta_S\!=\!1.00$, $P_{\text{riesgo}}\!=\!0.719$,
+  $V^*(s_{\text{normal}})\!=\!140.0$, $V_{\max}\!=\!180.0$.}
 \label{tab:ablation}
 \begin{tabular}{lccccc}
 \toprule
 \textbf{Configuraci\'on} & \textbf{ML} & \textbf{CSP} & \textbf{Bayes} & \textbf{MDP} &
   $Q_{\text{global}}$ \\
 \midrule
-Solo CSP            & $\times$ & \checkmark & $\times$ & $\times$ & --- \\
-ML + CSP            & \checkmark & \checkmark & $\times$ & $\times$ & --- \\
-ML + CSP + Bayes    & \checkmark & \checkmark & \checkmark & $\times$ & --- \\
-Sistema completo    & \checkmark & \checkmark & \checkmark & \checkmark & --- \\
+Solo CSP            & $\times$   & \checkmark & $\times$   & $\times$   & 1.000 \\
+ML + CSP            & \checkmark & \checkmark & $\times$   & $\times$   & 1.000 \\
+ML + CSP + Bayes    & \checkmark & \checkmark & \checkmark & $\times$   & 0.281 \\
+Sistema completo    & \checkmark & \checkmark & \checkmark & \checkmark & 0.219 \\
 \bottomrule
+\multicolumn{6}{l}{\small\textit{Nota}: La reducci\'on al agregar Bayes refleja el riesgo
+  real del horario ($P\!=\!0.719$); el MDP pondera adem\'as la calidad de la pol\'itica.}
 \end{tabular}
 \end{table}
 
@@ -1242,12 +1283,18 @@ Sistema completo    & \checkmark & \checkmark & \checkmark & \checkmark & --- \\
     herramientas aisladas: cada una resuelve una capa espec\'ifica del problema
     y sus salidas se encadenan de forma l\'ogica en el pipeline de decisi\'on.
 
-  \item \textbf{Superiodidad esperada del enfoque h\'ibrido.}
-    Con base en los fundamentos te\'oricos, se espera que el sistema completo
-    (Tabla~\ref{tab:ablation}) supere a cualquier m\'odulo en solitario,
-    ya que la predicci\'on de ML reduce el dominio del CSP, la red bayesiana
-    detecta riesgos que el CSP no modela, y el MDP garantiza resiliencia ante
-    contingencias.
+  \item \textbf{Desempe\~no comprobado del m\'odulo ML.}
+    El mejor modelo, Random Forest, alcanz\'o F1\,=\,0.934 y AUC\,=\,0.981
+    sobre el dataset OULAD real ($n\!=\!11\,999$), superando a todos los baselines.
+    El umbral de decisi\'on \'optimo fue $\tau=0.23$, obtenido minimizando el coste
+    diferencial entre falsos positivos y falsos negativos.
+
+  \item \textbf{Efectividad del m\'odulo CSP.}
+    El solucionador BT+FC+MRV+LCV resolvi\'o la instancia de 10~secciones
+    con \textbf{0 retrocesos} y $\eta_H=1.0$, generando un horario factible en
+    tiempo despreciable.  La red bayesiana revel\'o un riesgo operativo elevado
+    ($P(\text{Replanif})=0.719$), lo que ilustra el valor de incorporar el
+    m\'odulo~3: el CSP en solitario no detecta esta vulnerabilidad.
 
   \item \textbf{Aplicabilidad real.}
     El problema de planificaci\'on acad\'emica es un caso de uso real en cualquier
